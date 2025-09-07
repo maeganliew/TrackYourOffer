@@ -1,14 +1,18 @@
 // src/app.ts
 import express from 'express';
-//import userRoutes from './routes/users';  *example route, create this file
+import authRoutes from './routes/auth.routes'
+import { rateLimiter } from './middleware/rateLimiter'
+import dotenv from "dotenv";
+dotenv.config(); // so that can get env variables by process.env.XXX
 
 const app = express();
+
 
 
 // -------------------
 // Middleware
 // -------------------
-
+app.use(rateLimiter);
 
 //Built in middleware function dont need next(), the functions you write yourself needs next()
 // It reads JSON sent by the client and makes it available as a JavaScript object in req.body
@@ -24,10 +28,12 @@ app.use((req, res, next) => {
 });
 
 
+
+
 // -------------------
 // Routes
 // -------------------
-//app.use('/api/users', userRoutes);
+app.use('/auth', authRoutes);
 
 
 // 404 handler, only runs if no routes matched

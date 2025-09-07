@@ -42,6 +42,7 @@
 
     "esModuleInterop": true,
     "rootDir": "src",
-    "outDir": "dist",
-  }
+    "outDir": "dist"
+  }, 
+  "include": ["src/**/*.ts", "src/types/express.d.ts"]
 }
