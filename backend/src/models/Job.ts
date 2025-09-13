@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
 
 export enum JobStatus {
   Wishlist = 'wishlist',
@@ -10,13 +9,6 @@ export enum JobStatus {
 }
 
 const jobSchema = new mongoose.Schema({
-  uuid: {
-    type: String,
-    default: uuidv4,
-    unique: true,
-    immutable: true,
-  },
-  // 'enforcing' foreign keys
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
