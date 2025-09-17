@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { AuthenticatedRequest } from "../types/auth-request";
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   //frontend will send token to backend for protected routes
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ message: "No token provided" });
@@ -13,8 +14,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   }
   try {
     // jwt.verify returns the payload signed when creating the user (data stored in token, in auth.controller)
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    req.user = decoded;  // attach user info for later handlers
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; email: string };;
+    req.user = decoded;
     next();              // pass control to next middleware/controller
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });

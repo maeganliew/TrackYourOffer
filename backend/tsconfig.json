@@ -44,5 +44,5 @@
     "rootDir": "src",
     "outDir": "dist"
   }, 
-  "include": ["src/**/*.ts", "src/types/express.d.ts"]
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts"]
 }
