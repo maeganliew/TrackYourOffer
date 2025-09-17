@@ -14,7 +14,7 @@ export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: N
   }
   try {
     // jwt.verify returns the payload signed when creating the user (data stored in token, in auth.controller)
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; email: string };;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; email: string };
     req.user = decoded;
     next();              // pass control to next middleware/controller
   } catch (err) {
