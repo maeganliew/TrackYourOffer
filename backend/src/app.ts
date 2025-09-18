@@ -1,6 +1,7 @@
 // src/app.ts
 import express from 'express';
 import authRoutes from './routes/auth.routes'
+import userRoutes from './routes/user.routes'
 import { rateLimiter } from './middleware/rateLimiter'
 import dotenv from "dotenv";
 dotenv.config(); // so that can get env variables by process.env.XXX
@@ -34,6 +35,7 @@ app.use((req, res, next) => {
 // Routes
 // -------------------
 app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
 
 
 // 404 handler, only runs if no routes matched
@@ -44,7 +46,7 @@ app.use((req, res, next) => {
 // Centralized error handler, only runs if `next(err)` was called
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  res.status(500).json({ message: err.message || "Something went wrong!" });
 });
 
 export default app;

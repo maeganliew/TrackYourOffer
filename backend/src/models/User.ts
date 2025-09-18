@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false, // hide when querying unless explicitly selected
+      select: false, // hide when querying unless explicitly selected, so when selecting wouldnt return password
     },
   },
   {
