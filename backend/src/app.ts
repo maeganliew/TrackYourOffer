@@ -2,6 +2,8 @@
 import express from 'express';
 import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/user.routes'
+import tagRoutes from './routes/tags.routes'
+import jobRoutes from './routes/jobs.routes'
 import { rateLimiter } from './middleware/rateLimiter'
 import dotenv from "dotenv";
 dotenv.config(); // so that can get env variables by process.env.XXX
@@ -36,6 +38,8 @@ app.use((req, res, next) => {
 // -------------------
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+app.use('/tags', tagRoutes);
+app.use('/jobs', jobRoutes);
 
 
 // 404 handler, only runs if no routes matched

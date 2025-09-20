@@ -20,7 +20,9 @@ const jobTagSchema = new Schema({
   versionKey: false
 });
 
-// Optional: prevent duplicate [jobId + tagId] pairs
-jobTagSchema.index({ jobId: 1, tagId: 1 }, { unique: true });
+// Creates compound unique index, indexes by jobId ascending, then tagId ascendint.
+// No two documents can have the same combination of jobId and tagId
+// jobTagSchema.index({ jobId: 1, tagId: 1 }, { unique: true });
 
-export const JobTag = model('JobTag', jobTagSchema);
+const JobTag = model('JobTag', jobTagSchema);
+export default JobTag;
