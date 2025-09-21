@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
 // Define the database URL to connect to.
-const MONGO_URI = "mongodb://localhost:27017/";
+const MONGO_URI = "mongodb://localhost:27017/applicationTracker";
 
 // Wait for database to connect, logging an error if there is a problem
 export const connectDB = async () => {

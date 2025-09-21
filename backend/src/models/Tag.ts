@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-
-const allowedColours = ['orange', 'green', 'blue', 'purple', 'red', 'grey', 'yellow', 'black', 'pink'];
+import { tagColours } from '../Constants';
 
 const tagSchema = new mongoose.Schema({
   userId: {             // tie the tag to a user
@@ -16,7 +15,7 @@ const tagSchema = new mongoose.Schema({
   colour: {
     type: String,
     required: true,
-    enum: allowedColours,
+    enum: tagColours,
     default: 'grey',
   }
 }, {

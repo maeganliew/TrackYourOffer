@@ -50,7 +50,6 @@ export const changePassword =  async (req: AuthenticatedRequest, res: Response) 
     const hashedPass = await bcrypt.hash(newPassword, saltRounds);
     user.password = hashedPass;
     await user.save();
-
     res.status(200).json({ message: 'Password updated', user: { id: user._id, username: user.username}});
   } catch (err) {
     res.status(500).json({ message: 'Something went wrong' });

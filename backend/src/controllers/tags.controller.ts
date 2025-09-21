@@ -1,13 +1,19 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthenticatedRequest } from "../types/auth-request";
 import Tag from '../models/Tag';
-
+import { tagColours } from "../Constants";
 
 export const addUserTag = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const {name, colour} = req.body;
+        const name = req.body.name?.trim();
+        const colour = req.body.colour?.trim();        
+        
         if (!name || !colour) {
             return res.status(400).json({ message: 'Tag name and colour are required' });
+        }
+
+        if (!tagColours.includes(colour)) {
+            return res.status(400).json({ message: `Colours must be one of: ${tagColours.join(', ')}` });
         }
 
         const existingTag = await Tag.findOne({name, userId: req.user?.id});

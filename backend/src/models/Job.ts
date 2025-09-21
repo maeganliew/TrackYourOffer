@@ -1,12 +1,5 @@
 import mongoose from 'mongoose';
-
-export enum JobStatus {
-  Wishlist = 'wishlist',
-  Applied = 'applied',
-  Interviewing = 'interviewing',
-  Offer = 'offer',
-  Rejected = 'rejected',
-}
+import { allowedJobStatus } from '../Constants';
 
 const jobSchema = new mongoose.Schema({
   userId: {
@@ -14,14 +7,14 @@ const jobSchema = new mongoose.Schema({
     ref: 'User',
     required: true, // references user's uuid (not ObjectId)
   },
-  jobName: {
+  name: {
     type: String,
     required: true,
   },
-  jobStatus: {
+  status: {
     type: String,
-    enum: Object.values(JobStatus),
-    default: JobStatus.Wishlist,
+    enum: allowedJobStatus,
+    default: "wishlist",
   },
   appliedAt: {
     type: Date,

@@ -1,8 +1,31 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/auth.middleware';
-import { addJobTag, deleteJobTag, getJobTag} from '../controllers/jobs.controller';
+import { addJob, getJobs, getJob, changeJobName, changeJobStatus, changeJobDate, deleteJob, addJobTag, deleteJobTag, getJobTag} from '../controllers/jobs.controller';
 
 const router = express.Router();
+
+// Add jobs
+router.post('/', authMiddleware, addJob);
+
+// Get all jobs
+router.get('/', authMiddleware, getJobs);
+
+// Get single job
+router.get('/:jobId', authMiddleware, getJob);
+
+// Change job name
+router.patch('/:jobId/name', authMiddleware, changeJobName);
+
+// Change status
+router.patch('/:jobId/status', authMiddleware, changeJobStatus);
+
+// Change applied time
+router.patch('/:jobId/applied_time', authMiddleware, changeJobDate);
+
+// Delete job
+router.delete('/:jobId', authMiddleware, deleteJob);
+
+
 
 // Job - Add tag
 router.post('/:jobId/tags', authMiddleware, addJobTag);
