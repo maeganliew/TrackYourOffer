@@ -4,6 +4,7 @@ import Tag from '../models/Tag';
 import JobTag from '../models/jobTag';
 import Job from '../models/Job';
 import { allowedJobStatus } from "../Constants";
+import mongoose from "mongoose";
 
 export const assertJobOwnership = async (jobId: string | undefined, userId: string | undefined) => {
   if (!jobId) throw new Error('JobIdMissing');
@@ -180,6 +181,29 @@ export const getJobTag = async (req: AuthenticatedRequest, res: Response, next: 
         // In JobTag schema, 'ref: 'Tag',' so mongoose knows how to populate
         const jobTags = await JobTag.find({jobId: job._id}).populate('tagId', 'name colour');
         res.status(200).json({ message: 'Job Tag returned successfully', jobTags}); 
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const getJobsByTag = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const tagId = req.query.tagId?.toString();
+        const userId = req.user?.id;
+
+        if (!tagId) {
+        return res.status(400).json({ message: 'tagId query parameter is required' });
+        }
+        const tag = await Tag.findOne({ _id: tagId, userId });
+        if (!tag) {
+            return res.status(404).json({ message: 'Tag not found or does not belong to user' });
+        }
+
+        const tagObjectId = new mongoose.Types.ObjectId(tagId);
+        const jobTagLinks = await JobTag.find({ tagId });
+        const jobIds = jobTagLinks.map(link => link.jobId);
+        const jobs = await Job.find({ _id: { $in: jobIds }, userId });
+        res.status(200).json({ message: 'Jobs with specified tag returned successfully', jobs });
     } catch (err) {
         next(err);
     }
