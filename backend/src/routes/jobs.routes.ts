@@ -12,7 +12,7 @@ router.get('/by-tags', authMiddleware, getJobsByTag);
 // Add jobs
 router.post('/', authMiddleware, addJob);
 
-// Get all jobs
+// Get all jobs (with optional params stated)
 router.get('/', authMiddleware, getJobs);
 
 // Get single job

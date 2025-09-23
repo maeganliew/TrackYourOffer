@@ -49,11 +49,20 @@ export const addJob = async (req: AuthenticatedRequest, res: Response, next: Nex
 
 export const getJobs = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const existingJobs = await Job.find({ userId: req.user?.id });
-        if (existingJobs[0]?.userId.toString() !== req.user?.id) {
-            return res.status(403).json({ message: 'Forbidden: You cannot modify this job' });
+        const userId = req.user?.id;
+        const { search, sortBy = 'createdAt', order = 'desc' } = req.query;
+
+        const filter: any = { userId };
+        if (typeof search === 'string' && search.trim() !== '') {
+            filter.name = { $regex: search.trim(), $options: 'i' }; // case-insensitive
         }
-        res.status(200).json({ message: 'Jobs returned successfully', jobs: existingJobs});
+        const sortField = typeof sortBy === 'string' ? sortBy : 'createdAt';
+        const sortOrder = order === 'asc' ? 1 : -1;
+        const sortOption: any = { [sortField]: sortOrder };
+
+        const jobs = await Job.find(filter).sort(sortOption);
+
+        res.status(200).json({ message: 'Jobs returned successfully', jobs });
     } catch (err) {
         next(err);
     }
