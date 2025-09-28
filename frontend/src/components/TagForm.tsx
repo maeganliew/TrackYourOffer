@@ -5,12 +5,12 @@ import { Tag } from '../types';
 interface TagFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (tagData: { name: string; color: string }) => void;
+  onSubmit: (tagData: { name: string; colour: string }) => void;
   tag?: Tag | null;
   isLoading?: boolean;
 }
 
-const PRESET_COLORS = [
+const PRESET_COLOURS = [
   '#3B82F6', // Blue
   '#10B981', // Emerald
   '#8B5CF6', // Purple
@@ -32,7 +32,7 @@ const TagForm: React.FC<TagFormProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     name: '',
-    color: PRESET_COLORS[0],
+    colour: PRESET_COLOURS[0],
   });
 
   useEffect(() => {
@@ -40,12 +40,12 @@ const TagForm: React.FC<TagFormProps> = ({
       if (tag) {
         setFormData({
           name: tag.name,
-          color: tag.color,
+          colour: tag.colour,
         });
       } else {
         setFormData({
           name: '',
-          color: PRESET_COLORS[0],
+          colour: PRESET_COLOURS[0],
         });
       }
     }
@@ -102,17 +102,17 @@ const TagForm: React.FC<TagFormProps> = ({
                 Tag Color
               </label>
               <div className="grid grid-cols-5 gap-3">
-                {PRESET_COLORS.map((color) => (
+                {PRESET_COLOURS.map((colour) => (
                   <button
-                    key={color}
+                    key={colour}
                     type="button"
-                    onClick={() => setFormData({ ...formData, color })}
+                    onClick={() => setFormData({ ...formData, colour })}
                     className={`w-10 h-10 rounded-full border-4 transition-all ${
-                      formData.color === color
+                      formData.colour === colour
                         ? 'border-gray-400 scale-110'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
-                    style={{ backgroundColor: color }}
+                    style={{ backgroundColor: colour }}
                   />
                 ))}
               </div>
@@ -120,14 +120,14 @@ const TagForm: React.FC<TagFormProps> = ({
               <div className="mt-3 flex items-center space-x-2">
                 <input
                   type="color"
-                  value={formData.color}
+                  value={formData.colour}
                   onChange={handleChange}
                   name="color"
                   className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
                 />
                 <input
                   type="text"
-                  value={formData.color}
+                  value={formData.colour}
                   onChange={handleChange}
                   name="color"
                   className="flex-1 text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
@@ -144,9 +144,9 @@ const TagForm: React.FC<TagFormProps> = ({
               <div
                 className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border"
                 style={{
-                  backgroundColor: `${formData.color}20`,
-                  color: formData.color,
-                  borderColor: `${formData.color}40`,
+                  backgroundColor: `${formData.colour}20`,
+                  color: formData.colour,
+                  borderColor: `${formData.colour}40`,
                 }}
               >
                 {formData.name || 'Tag Name'}

@@ -15,9 +15,9 @@ export interface Job {
 }
 
 export interface Tag {
-  id: string;
+  _id: string;
   name: string;
-  color: string;
+  colour: string;
   createdAt: string;
 }
 

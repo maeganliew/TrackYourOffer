@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthenticatedRequest } from "../types/auth-request";
 import Tag from '../models/Tag';
-import { tagColours } from "../Constants";
 
 export const addUserTag = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
@@ -10,10 +9,6 @@ export const addUserTag = async (req: AuthenticatedRequest, res: Response, next:
         
         if (!name || !colour) {
             return res.status(400).json({ message: 'Tag name and colour are required' });
-        }
-
-        if (!tagColours.includes(colour)) {
-            return res.status(400).json({ message: `Colours must be one of: ${tagColours.join(', ')}` });
         }
 
         const existingTag = await Tag.findOne({name, userId: req.user?.id});
@@ -55,3 +50,23 @@ export const getUserTag = async (req: AuthenticatedRequest, res: Response, next:
         next(err);
     }
 }
+
+export const editUserTag = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const tagId = req.params.tagId;
+    const { name, colour } = req.body;
+    // Find the tag
+    const tag = await Tag.findOne({ _id: tagId, userId: req.user?.id });
+    if (!tag) return res.status(404).json({ message: 'Tag not found' });
+
+    // Update fields
+    tag.name = name ?? tag.name;
+    tag.colour = colour ?? tag.colour;
+    await tag.save();
+
+    res.status(200).json(tag); // return updated tag
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update tag' });
+  }
+};

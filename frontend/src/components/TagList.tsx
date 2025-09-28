@@ -26,23 +26,25 @@ const TagList: React.FC<TagListProps> = ({
     );
   }
 
+        console.log(tags);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {tags.map((tag) => (
         <div
-          key={tag.id}
+          key={tag._id}
           className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-4 group"
         >
           <div className="flex items-start justify-between mb-3">
             <div 
               className="flex items-center cursor-pointer flex-1"
-              onClick={() => onFilterByTag(tag.id)}
+              onClick={() => onFilterByTag(tag._id)}
             >
               <div
                 className="w-4 h-4 rounded-full mr-3 border-2"
                 style={{ 
-                  backgroundColor: `${tag.color}30`,
-                  borderColor: tag.color 
+                  backgroundColor: `${tag.colour}30`,
+                  borderColor: tag.colour 
                 }}
               />
               <div className="flex-1 min-w-0">
@@ -63,7 +65,7 @@ const TagList: React.FC<TagListProps> = ({
                 <Edit className="h-3.5 w-3.5" />
               </button>
               <button
-                onClick={() => onDelete(tag.id)}
+                onClick={() => onDelete(tag._id)}
                 className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                 title="Delete tag"
               >
@@ -76,16 +78,16 @@ const TagList: React.FC<TagListProps> = ({
             <span
               className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border"
               style={{
-                backgroundColor: `${tag.color}15`,
-                color: tag.color,
-                borderColor: `${tag.color}30`,
+                backgroundColor: `${tag.colour}15`,
+                color: tag.colour,
+                borderColor: `${tag.colour}30`,
               }}
             >
               <TagIcon className="h-3 w-3 mr-1" />
               {tag.name}
             </span>
             <button
-              onClick={() => onFilterByTag(tag.id)}
+              onClick={() => onFilterByTag(tag._id)}
               className="text-xs text-indigo-600 hover:text-indigo-500 font-medium transition-colors"
             >
               View Jobs

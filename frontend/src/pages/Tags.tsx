@@ -22,22 +22,19 @@ const Tags: React.FC = () => {
   const fetchTags = async () => {
     try {
       // Mock data for demonstration
-      const mockTags: Tag[] = [
-        { id: '1', name: 'Frontend', color: '#3B82F6', createdAt: new Date(Date.now() - 86400000).toISOString() },
-        { id: '2', name: 'React', color: '#10B981', createdAt: new Date(Date.now() - 172800000).toISOString() },
-        { id: '3', name: 'Remote', color: '#8B5CF6', createdAt: new Date(Date.now() - 259200000).toISOString() },
-        { id: '4', name: 'Full-time', color: '#F59E0B', createdAt: new Date(Date.now() - 345600000).toISOString() },
-        { id: '5', name: 'TypeScript', color: '#EF4444', createdAt: new Date(Date.now() - 432000000).toISOString() },
-        { id: '6', name: 'Node.js', color: '#06B6D4', createdAt: new Date(Date.now() - 518400000).toISOString() },
-      ];
-      
-      setTags(mockTags);
+      // const mockTags: Tag[] = [
+      //   { id: '1', name: 'Frontend', color: '#3B82F6', createdAt: new Date(Date.now() - 86400000).toISOString() },
+      //   { id: '2', name: 'React', color: '#10B981', createdAt: new Date(Date.now() - 172800000).toISOString() },
+      //   { id: '3', name: 'Remote', color: '#8B5CF6', createdAt: new Date(Date.now() - 259200000).toISOString() },
+      //   { id: '4', name: 'Full-time', color: '#F59E0B', createdAt: new Date(Date.now() - 345600000).toISOString() },
+      //   { id: '5', name: 'TypeScript', color: '#EF4444', createdAt: new Date(Date.now() - 432000000).toISOString() },
+      //   { id: '6', name: 'Node.js', color: '#06B6D4', createdAt: new Date(Date.now() - 518400000).toISOString() },
+      // ];
+      const response = await api.get('/tags');
+      console.log("GET /tags response.data:", response.data);
+      const fetchedTags = Array.isArray(response.data.tags) ? response.data.tags : [];
+      setTags(fetchedTags);
       setIsLoading(false);
-
-      // Actual API call (uncomment when backend is ready):
-      // const response = await api.get<Tag[]>('/tags');
-      // setTags(response.data);
-      // setIsLoading(false);
     } catch (error) {
       console.error('Error fetching tags:', error);
       setIsLoading(false);
@@ -61,22 +58,21 @@ const Tags: React.FC = () => {
 
     try {
       await api.delete(`/tags/${tagId}`);
-      setTags(tags.filter(tag => tag.id !== tagId));
+      setTags(tags.filter(tag => tag._id !== tagId));
       toast.success('Tag deleted successfully!');
     } catch (error) {
       console.error('Error deleting tag:', error);
     }
   };
 
-  const handleFormSubmit = async (tagData: { name: string; color: string }) => {
+  const handleFormSubmit = async (tagData: { name: string; colour: string }) => {
     setIsSubmitting(true);
-    
     try {
       if (editingTag) {
         // Update existing tag
-        await api.patch(`/tags/${editingTag.id}`, tagData);
+        await api.patch(`/tags/${editingTag._id}`, tagData);
         setTags(tags.map(tag => 
-          tag.id === editingTag.id 
+          tag._id === editingTag._id 
             ? { ...tag, ...tagData }
             : tag
         ));
@@ -84,11 +80,9 @@ const Tags: React.FC = () => {
       } else {
         // Create new tag
         const response = await api.post('/tags', tagData);
-        const newTag: Tag = {
-          id: response.data.id,
-          ...tagData,
-          createdAt: new Date().toISOString(),
-        };
+        const newTag: Tag = response.data.tag;
+        newTag.createdAt = newTag.createdAt ?? new Date().toISOString();
+
         setTags([newTag, ...tags]);
         toast.success('Tag created successfully!');
       }

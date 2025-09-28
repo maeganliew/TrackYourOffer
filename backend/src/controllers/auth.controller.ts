@@ -20,6 +20,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         return res.status(401).json({ message: "Invalid login credentials" });
         }
 
+        // conversion from _id to id here
         const token = jwt.sign({id: existingUser._id.toString(),email: existingUser.email }, process.env.JWT_SECRET!, {expiresIn: "2h"});
         const { _id, email: userEmail } = existingUser;
         return res.json({

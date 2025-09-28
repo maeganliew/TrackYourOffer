@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { tagColours } from '../Constants';
+//import { tagColours } from '../Constants';
 
 const tagSchema = new mongoose.Schema({
   userId: {             // tie the tag to a user
@@ -15,8 +15,7 @@ const tagSchema = new mongoose.Schema({
   colour: {
     type: String,
     required: true,
-    enum: tagColours,
-    default: 'grey',
+    default: '#6B7280',
   }
 }, {
   timestamps: true,
