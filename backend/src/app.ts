@@ -6,11 +6,16 @@ import tagRoutes from './routes/tags.routes'
 import jobRoutes from './routes/jobs.routes'
 import { rateLimiter } from './middleware/rateLimiter'
 import dotenv from "dotenv";
+import cors from 'cors';
+
 dotenv.config(); // so that can get env variables by process.env.XXX
 
 const app = express();
 
-
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
 
 // -------------------
 // Middleware

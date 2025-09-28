@@ -6,10 +6,10 @@ const jwt = require("jsonwebtoken");
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {username, password} = req.body;
+        const {email, password} = req.body;
 
         // User schema has 'select false' for passwords
-        const existingUser =  await User.findOne({username: username}).select("+password");;
+        const existingUser =  await User.findOne({email: email}).select("+password");;
         if (!existingUser) {
         return res.status(401).json({ message: "Invalid login credentials" });
         }
@@ -20,26 +20,45 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         return res.status(401).json({ message: "Invalid login credentials" });
         }
 
-        const token = jwt.sign({id: existingUser._id.toString(),username: existingUser.username }, process.env.JWT_SECRET!, {expiresIn: "2h"});
-        res.json({token});
+        const token = jwt.sign({id: existingUser._id.toString(),email: existingUser.email }, process.env.JWT_SECRET!, {expiresIn: "2h"});
+        const { _id, email: userEmail } = existingUser;
+        return res.json({
+        token,
+        user: { id: _id, email: userEmail }, // match your User type
+        });
     } catch (err) {
         next(err);
     }
 }
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
-    const { username, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-    const existingUser =  await User.findOne({username: username});
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-        const error = new Error("User already exists.");
-        return next(error);
+      return res.status(400).json({ message: "User already exists." });
     }
 
-    // Hash passwowrd
-    const saltRounds = 10; // cost factor - how many times the hashing algo is applied. if higher means more computationally expensive
+    const saltRounds = 10;
     const hashedPass = await bcrypt.hash(password, saltRounds);
 
-    const user = await User.create({ username, password: hashedPass });
-    res.status(201).json({ message: "User created", uid: user._id });
+    const user = await User.create({ email, password: hashedPass });
+
+    const token = jwt.sign(
+      { id: user._id.toString(), email: user.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "2h" }
+    );
+
+    return res.status(201).json({
+      message: "User created",
+      uid: user._id,
+      token,
+      email: user.email,
+    });
+  } catch (err) {
+    console.error("Register error:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };

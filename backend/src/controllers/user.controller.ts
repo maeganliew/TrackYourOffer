@@ -4,11 +4,11 @@ import bcrypt from "bcrypt";
 import { AuthenticatedRequest } from "../types/auth-request";
 
 
-export const changeUsername =  async (req: AuthenticatedRequest, res: Response) => {
+export const changeEmail =  async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { newUsername } = req.body;
+    const { newEmail } = req.body;
 
-    if (!newUsername) {
+    if (!newEmail) {
       return res.status(400).json({ message: 'New username is required' });
     }
 
@@ -19,15 +19,15 @@ export const changeUsername =  async (req: AuthenticatedRequest, res: Response) 
     }
 
     //Checks for duplicate username
-    const existingUsername = await User.findOne({username: newUsername});
+    const existingUsername = await User.findOne({email: newEmail});
     if (existingUsername) {
       return res.status(400).json({ message: 'Username already exists' });
     }
 
-    user.username = newUsername;
+    user.email = newEmail;
     await user.save();
 
-    res.status(200).json({ message: 'Username updated', user: { id: user._id, username: user.username}});
+    res.status(200).json({ message: 'Username updated', user: { id: user._id, email: user.email}});
   } catch (err) {
     res.status(500).json({ message: 'Something went wrong' });
   }
@@ -50,7 +50,7 @@ export const changePassword =  async (req: AuthenticatedRequest, res: Response) 
     const hashedPass = await bcrypt.hash(newPassword, saltRounds);
     user.password = hashedPass;
     await user.save();
-    res.status(200).json({ message: 'Password updated', user: { id: user._id, username: user.username}});
+    res.status(200).json({ message: 'Password updated', user: { id: user._id, email: user.email}});
   } catch (err) {
     res.status(500).json({ message: 'Something went wrong' });
   }
