@@ -1,10 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { AuthenticatedRequest } from "../types/auth-request";
 import Tag from '../models/Tag';
 import JobTag from '../models/jobTag';
 import Job from '../models/Job';
 import { allowedJobStatus } from "../Constants";
 import mongoose from "mongoose";
+import type { Tag as typeTag } from "../types/index.ts";
 
 export const assertJobOwnership = async (jobId: string | undefined, userId: string | undefined) => {
   if (!jobId) throw new Error('JobIdMissing');
@@ -48,25 +49,60 @@ export const addJob = async (req: AuthenticatedRequest, res: Response, next: Nex
 }
 
 export const getJobs = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-        const userId = req.user?.id;
-        const { search, sortBy = 'createdAt', order = 'desc' } = req.query;
+  try {
+    const userId = req.user?.id;
+    const { search, sortBy = 'createdAt', order = 'desc' } = req.query;
 
-        const filter: any = { userId };
-        if (typeof search === 'string' && search.trim() !== '') {
-            filter.name = { $regex: search.trim(), $options: 'i' }; // case-insensitive
-        }
-        const sortField = typeof sortBy === 'string' ? sortBy : 'createdAt';
-        const sortOrder = order === 'asc' ? 1 : -1;
-        const sortOption: any = { [sortField]: sortOrder };
-
-        const jobs = await Job.find(filter).sort(sortOption);
-
-        res.status(200).json({ message: 'Jobs returned successfully', jobs });
-    } catch (err) {
-        next(err);
+    const filter: any = { userId };
+    if (typeof search === 'string' && search.trim() !== '') {
+      filter.name = { $regex: search.trim(), $options: 'i' };
     }
-}
+
+    const sortField = typeof sortBy === 'string' ? sortBy : 'createdAt';
+    const sortOrder = order === 'asc' ? 1 : -1;
+
+    // Step 1: Get all jobs
+    const jobs = await Job.find(filter).sort({ [sortField]: sortOrder });
+
+    // Step 2: Get all related JobTags
+    // Array of jobIds
+    const jobIds = jobs.map(job => job._id);
+    // Array of jobTags
+    const jobTags = await JobTag.find({ jobId: { $in: jobIds } })
+      .populate('tagId', 'name colour')
+      .lean();
+
+    // Step 3: Group tags by jobId
+    const tagsByJob: Record<string, { id: string; name: string; color: string }[]> = {};
+    for (const jt of jobTags) {
+      const jobId = jt.jobId.toString();
+      const tag = jt.tagId as unknown as typeTag;
+      if (!tagsByJob[jobId]) tagsByJob[jobId] = [];
+
+      tagsByJob[jobId].push({
+        id: tag._id.toString(),
+        name: tag.name,
+        color: tag.colour,
+      });
+    }
+
+    // Step 4: Attach tags to jobs
+    const jobsWithTags = jobs.map(job => ({
+      id: job._id.toString(),
+      name: job.name,
+      status: job.status,
+      appliedAt: job.appliedAt,
+      createdAt: job.createdAt,
+      updatedAt: job.updatedAt,
+      tags: tagsByJob[job._id.toString()] || [],
+    }));
+
+    res.status(200).json({ message: 'Jobs returned successfully', jobs: jobsWithTags });
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 export const getJob = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {

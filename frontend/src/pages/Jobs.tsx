@@ -21,86 +21,24 @@ const Jobs: React.FC = () => {
 
   useEffect(() => {
     fetchJobs();
-    fetchTags();
+    //fetchTags();
   }, []);
 
   const fetchJobs = async () => {
     try {
-      // Mock data for demonstration
-      const mockJobs: Job[] = [
-        {
-          id: '1',
-          name: 'Senior Frontend Developer at TechCorp',
-          status: 'applied',
-          applied_time: new Date(Date.now() - 86400000).toISOString(),
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          updatedAt: new Date(Date.now() - 86400000).toISOString(),
-          tags: [
-            { id: '1', name: 'Frontend', color: '#3B82F6', createdAt: new Date().toISOString() },
-            { id: '2', name: 'React', color: '#10B981', createdAt: new Date().toISOString() },
-          ],
+      const response = await api.get('/jobs', {
+        params: {
+          search: searchTerm,
+          sortBy,
+          order: sortOrder,
+          tagId: selectedTag,
         },
-        {
-          id: '2',
-          name: 'Full Stack Engineer at StartupXYZ',
-          status: 'interview',
-          applied_time: new Date(Date.now() - 172800000).toISOString(),
-          createdAt: new Date(Date.now() - 172800000).toISOString(),
-          updatedAt: new Date(Date.now() - 172800000).toISOString(),
-          tags: [
-            { id: '3', name: 'Remote', color: '#8B5CF6', createdAt: new Date().toISOString() },
-            { id: '4', name: 'Full-time', color: '#F59E0B', createdAt: new Date().toISOString() },
-          ],
-        },
-        {
-          id: '3',
-          name: 'React Developer at DesignCo',
-          status: 'offer',
-          applied_time: new Date(Date.now() - 259200000).toISOString(),
-          createdAt: new Date(Date.now() - 259200000).toISOString(),
-          updatedAt: new Date(Date.now() - 259200000).toISOString(),
-          tags: [
-            { id: '2', name: 'React', color: '#10B981', createdAt: new Date().toISOString() },
-            { id: '1', name: 'Frontend', color: '#3B82F6', createdAt: new Date().toISOString() },
-          ],
-        },
-      ];
-      
-      setJobs(mockJobs);
+      });
+      setJobs(response.data.jobs);
       setIsLoading(false);
-
-      // Actual API call (uncomment when backend is ready):
-      // const response = await api.get<Job[]>('/jobs', {
-      //   params: {
-      //     search: searchTerm,
-      //     sortBy,
-      //     order: sortOrder,
-      //     tagId: selectedTag,
-      //   },
-      // });
-      // setJobs(response.data);
-      // setIsLoading(false);
     } catch (error) {
       console.error('Error fetching jobs:', error);
       setIsLoading(false);
-    }
-  };
-
-  const fetchTags = async () => {
-    try {
-      const mockTags: Tag[] = [
-        { id: '1', name: 'Frontend', color: '#3B82F6', createdAt: new Date().toISOString() },
-        { id: '2', name: 'React', color: '#10B981', createdAt: new Date().toISOString() },
-        { id: '3', name: 'Remote', color: '#8B5CF6', createdAt: new Date().toISOString() },
-        { id: '4', name: 'Full-time', color: '#F59E0B', createdAt: new Date().toISOString() },
-      ];
-      setAvailableTags(mockTags);
-
-      // Actual API call (uncomment when backend is ready):
-      // const response = await api.get<Tag[]>('/tags');
-      // setAvailableTags(response.data);
-    } catch (error) {
-      console.error('Error fetching tags:', error);
     }
   };
 
@@ -135,9 +73,9 @@ const Jobs: React.FC = () => {
 
   const handleDateChange = async (jobId: string, date: string) => {
     try {
-      await api.patch(`/jobs/${jobId}/applied_time`, { applied_time: date });
+      await api.patch(`/jobs/${jobId}/appliedAt`, { appliedAt: date });
       setJobs(jobs.map(job => 
-        job.id === jobId ? { ...job, applied_time: date } : job
+        job.id === jobId ? { ...job, appliedAt: date } : job
       ));
       toast.success('Date updated successfully!');
     } catch (error) {
@@ -155,12 +93,11 @@ const Jobs: React.FC = () => {
     setSortOrder(newOrder);
     // In a real app, you'd refetch data with new sort parameters
   };
-
   // Filter and sort jobs
   const filteredAndSortedJobs = jobs
     .filter(job => {
       const matchesSearch = job.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesTag = !selectedTag || job.tags?.some(tag => tag.id === selectedTag);
+      const matchesTag = !selectedTag || job.tags?.some(tag => tag._id === selectedTag);
       return matchesSearch && matchesTag;
     })
     .sort((a, b) => {

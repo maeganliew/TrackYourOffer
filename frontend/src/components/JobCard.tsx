@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, CreditCard as Edit, Trash2, Tag as TagIcon } from 'lucide-react';
-import { Job, Tag } from '../types';
+import { Job } from '../types';
 import { format } from 'date-fns';
 
 interface JobCardProps {
@@ -19,8 +19,9 @@ const JobCard: React.FC<JobCardProps> = ({
   onDateChange
 }) => {
   const [isEditingDate, setIsEditingDate] = useState(false);
-  const [tempDate, setTempDate] = useState(job.applied_time.split('T')[0]);
-
+  const [tempDate, setTempDate] = useState(
+    job.appliedAt ? job.appliedAt.split('T')[0] : new Date().toISOString().split('T')[0]
+  );
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'applied': return 'bg-blue-100 text-blue-800 border-blue-200';
@@ -28,6 +29,7 @@ const JobCard: React.FC<JobCardProps> = ({
       case 'offer': return 'bg-green-100 text-green-800 border-green-200';
       case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
       case 'withdrawn': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'wishlist': return 'bg-pink-100 text-pink-800 border-pink-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -41,7 +43,7 @@ const JobCard: React.FC<JobCardProps> = ({
     if (e.key === 'Enter') {
       handleDateSubmit();
     } else if (e.key === 'Escape') {
-      setTempDate(job.applied_time.split('T')[0]);
+      setTempDate(job.appliedAt.split('T')[0]);
       setIsEditingDate(false);
     }
   };
@@ -74,8 +76,8 @@ const JobCard: React.FC<JobCardProps> = ({
                   onClick={() => setIsEditingDate(true)}
                   className="cursor-pointer hover:text-indigo-600 transition-colors"
                 >
-                  {format(new Date(job.applied_time), 'MMM d, yyyy')}
-                </span>
+                {job.appliedAt ? format(new Date(job.appliedAt), 'MMM d, yyyy'): 'No date set'}                
+                  </span>
               )}
             </div>
           </div>
@@ -105,12 +107,12 @@ const JobCard: React.FC<JobCardProps> = ({
             <TagIcon className="h-4 w-4 text-gray-400" />
             {job.tags.map((tag) => (
               <span
-                key={tag.id}
+                key={tag._id}
                 className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
                 style={{
-                  backgroundColor: `${tag.color}20`,
-                  color: tag.color,
-                  border: `1px solid ${tag.color}40`,
+                  backgroundColor: `${tag.colour}20`,
+                  color: tag.colour,
+                  border: `1px solid ${tag.colour}40`,
                 }}
               >
                 {tag.name}
@@ -131,6 +133,7 @@ const JobCard: React.FC<JobCardProps> = ({
           <option value="interview">Interview</option>
           <option value="offer">Offer</option>
           <option value="rejected">Rejected</option>
+          <option value="wishlist">Wishlist</option>
           <option value="withdrawn">Withdrawn</option>
         </select>
         <span className="text-xs text-gray-500">

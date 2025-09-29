@@ -15,7 +15,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
   const [formData, setFormData] = useState({
     name: '',
     status: 'applied' as Job['status'],
-    applied_time: new Date().toISOString().split('T')[0],
+    appliedAt: new Date().toISOString().split('T')[0],
   });
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -23,19 +23,20 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
   const [isTagsLoading, setIsTagsLoading] = useState(false);
 
   useEffect(() => {
+    // populate form with existing job data when form is opened
     if (isOpen) {
       if (job) {
         setFormData({
           name: job.name,
           status: job.status,
-          applied_time: job.applied_time.split('T')[0],
+          appliedAt: job.appliedAt ? job.appliedAt.split('T')[0] : ''        
         });
-        setSelectedTags(job.tags?.map(tag => tag.id) || []);
+        setSelectedTags(job.tags?.map(tag => tag._id) || []);
       } else {
         setFormData({
           name: '',
           status: 'applied',
-          applied_time: new Date().toISOString().split('T')[0],
+          appliedAt: new Date().toISOString().split('T')[0],
         });
         setSelectedTags([]);
       }
@@ -46,18 +47,9 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
   const fetchTags = async () => {
     setIsTagsLoading(true);
     try {
-      // Mock data - replace with actual API call
-      const mockTags: Tag[] = [
-        { id: '1', name: 'Frontend', color: '#3B82F6', createdAt: new Date().toISOString() },
-        { id: '2', name: 'React', color: '#10B981', createdAt: new Date().toISOString() },
-        { id: '3', name: 'Remote', color: '#8B5CF6', createdAt: new Date().toISOString() },
-        { id: '4', name: 'Full-time', color: '#F59E0B', createdAt: new Date().toISOString() },
-      ];
-      setAvailableTags(mockTags);
-      
-      // Actual API call (uncomment when backend is ready):
-      // const response = await api.get<Tag[]>('/tags');
-      // setAvailableTags(response.data);
+      // Actual API call
+      const response = await api.get<Tag[]>('/tags');
+      setAvailableTags(response.data);
     } catch (error) {
       console.error('Error fetching tags:', error);
     } finally {
@@ -66,20 +58,23 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // prevent default page refresh
+    if (!formData.appliedAt || formData.appliedAt.trim() === '') {
+      toast.error('Application date is required!');
+      return;
+    }
     setIsLoading(true);
-
     try {
       const jobData = {
         ...formData,
-        applied_time: new Date(formData.applied_time).toISOString(),
+        appliedAt: new Date(formData.appliedAt).toISOString(),
       };
 
       if (job) {
         // Update existing job
-        await api.patch(`/jobs/${job.id}/name`, { name: formData.name });
-        await api.patch(`/jobs/${job.id}/status`, { status: formData.status });
-        await api.patch(`/jobs/${job.id}/applied_time`, { applied_time: jobData.applied_time });
+        await api.patch(`/jobs/${job.id}/name`, { newJobName: formData.name });
+        await api.patch(`/jobs/${job.id}/status`, { newJobStatus: formData.status });
+        await api.patch(`/jobs/${job.id}/appliedAt`, { newTime: jobData.appliedAt });
         
         // Update tags (simplified - in real implementation, you'd handle additions/removals)
         // This is a placeholder for tag management
@@ -171,19 +166,20 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
                 <option value="interview">Interview</option>
                 <option value="offer">Offer</option>
                 <option value="rejected">Rejected</option>
+                <option value="wishlit">Wishlist</option>
                 <option value="withdrawn">Withdrawn</option>
               </select>
             </div>
 
             <div>
-              <label htmlFor="applied_time" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="appliedAt" className="block text-sm font-medium text-gray-700">
                 Applied Date
               </label>
               <input
                 type="date"
-                id="applied_time"
-                name="applied_time"
-                value={formData.applied_time}
+                id="appliedAt"
+                name="appliedAt"
+                value={formData.appliedAt}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
               />
@@ -199,18 +195,18 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {availableTags.map((tag) => (
+                  {availableTags.length > 0 && availableTags.map((tag) => (
                     <button
-                      key={tag.id}
+                      key={tag._id}
                       type="button"
-                      onClick={() => toggleTag(tag.id)}
+                      onClick={() => toggleTag(tag._id)}
                       className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                        selectedTags.includes(tag.id)
+                        selectedTags.includes(tag._id)
                           ? 'border-indigo-300 bg-indigo-50 text-indigo-700'
                           : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      {selectedTags.includes(tag.id) && <Plus className="h-3 w-3 mr-1 rotate-45" />}
+                      {selectedTags.includes(tag._id) && <Plus className="h-3 w-3 mr-1 rotate-45" />}
                       {tag.name}
                     </button>
                   ))}

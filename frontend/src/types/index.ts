@@ -8,7 +8,7 @@ export interface Job {
   id: string;
   name: string;
   status: 'applied' | 'interview' | 'offer' | 'rejected' | 'withdrawn';
-  applied_time: string;
+  appliedAt: string;
   createdAt: string;
   updatedAt: string;
   tags?: Tag[];

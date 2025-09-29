@@ -25,7 +25,7 @@ router.patch('/:jobId/name', authMiddleware, changeJobName);
 router.patch('/:jobId/status', authMiddleware, changeJobStatus);
 
 // Change applied time
-router.patch('/:jobId/applied_time', authMiddleware, changeJobDate);
+router.patch('/:jobId/appliedAt', authMiddleware, changeJobDate);
 
 // Delete job
 router.delete('/:jobId', authMiddleware, deleteJob);
