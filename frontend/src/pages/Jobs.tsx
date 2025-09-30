@@ -5,8 +5,10 @@ import SortFilterBar from '../components/SortFilterBar';
 import { Job, Tag } from '../types';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import { useLocation } from 'react-router-dom';
 
 const Jobs: React.FC = () => {
+  const location = useLocation();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,24 +22,39 @@ const Jobs: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchJobs();
-    //fetchTags();
-  }, []);
+    const params = new URLSearchParams(location.search);
+    const tagFromQuery = params.get('tagId');
+    setSelectedTag(tagFromQuery);
+    fetchJobs(tagFromQuery ?? undefined);
+    fetchTags();
+  }, [location.search]);
 
-  const fetchJobs = async () => {
+  const fetchJobs = async (tag?: string) => {
     try {
       const response = await api.get('/jobs', {
         params: {
           search: searchTerm,
           sortBy,
           order: sortOrder,
-          tagId: selectedTag,
+          tagId: tag ?? selectedTag,
         },
       });
       setJobs(response.data.jobs);
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching jobs:', error);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchTags = async () => {
+    try {
+      const response = await api.get('/tags');
+      const availableTags = Array.isArray(response.data.tags) ? response.data.tags : [];
+      setAvailableTags(availableTags);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching tags:', error);
       setIsLoading(false);
     }
   };
@@ -105,7 +122,7 @@ const Jobs: React.FC = () => {
       if (sortBy === 'name') {
         comparison = a.name.localeCompare(b.name);
       } else {
-        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        comparison = new Date(a.appliedAt).getTime() - new Date(b.appliedAt).getTime();
       }
       return sortOrder === 'asc' ? comparison : -comparison;
     });

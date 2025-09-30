@@ -7,7 +7,7 @@ export interface User {
 export interface Job {
   id: string;
   name: string;
-  status: 'applied' | 'interview' | 'offer' | 'rejected' | 'withdrawn';
+  status: 'Applied' | 'Interview' | 'Offer' | 'Rejected' | 'Withdrawn' | 'Wishlist';
   appliedAt: string;
   createdAt: string;
   updatedAt: string;

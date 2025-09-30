@@ -31,7 +31,6 @@ const Tags: React.FC = () => {
       //   { id: '6', name: 'Node.js', color: '#06B6D4', createdAt: new Date(Date.now() - 518400000).toISOString() },
       // ];
       const response = await api.get('/tags');
-      console.log("GET /tags response.data:", response.data);
       const fetchedTags = Array.isArray(response.data.tags) ? response.data.tags : [];
       setTags(fetchedTags);
       setIsLoading(false);

@@ -1,12 +1,12 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/auth.middleware';
-import { addJob, getJobs, getJob, changeJobName, changeJobStatus, changeJobDate, deleteJob, addJobTag, deleteJobTag, getJobTag, getJobsByTag} from '../controllers/jobs.controller';
+import { addJob, getJobs, getJob, changeJobName, changeJobStatus, changeJobDate, deleteJob, addJobTag, deleteJobTag, getJobTag } from '../controllers/jobs.controller';
 
 const router = express.Router();
 
 // Get all jobs of certain tags 
 // need to put before getJob, if not Express will treat by-tags as jobId
-router.get('/by-tags', authMiddleware, getJobsByTag);
+//router.get('/by-tags/:tagId', authMiddleware, getJobsByTag);
 
 
 // Add jobs

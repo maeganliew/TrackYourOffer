@@ -56,7 +56,7 @@ const SortFilterBar: React.FC<SortFilterBarProps> = ({
             >
               <option value="">All Tags</option>
               {availableTags.map((tag) => (
-                <option key={tag.id} value={tag.id}>
+                <option key={tag._id} value={tag._id}>
                   {tag.name}
                 </option>
               ))}

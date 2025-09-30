@@ -14,7 +14,7 @@ interface JobFormProps {
 const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) => {
   const [formData, setFormData] = useState({
     name: '',
-    status: 'applied' as Job['status'],
+    status: 'Applied' as Job['status'],
     appliedAt: new Date().toISOString().split('T')[0],
   });
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
@@ -35,7 +35,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
       } else {
         setFormData({
           name: '',
-          status: 'applied',
+          status: 'Applied',
           appliedAt: new Date().toISOString().split('T')[0],
         });
         setSelectedTags([]);
@@ -48,8 +48,8 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
     setIsTagsLoading(true);
     try {
       // Actual API call
-      const response = await api.get<Tag[]>('/tags');
-      setAvailableTags(response.data);
+      const response = await api.get('/tags');
+      setAvailableTags(response.data.tags);
     } catch (error) {
       console.error('Error fetching tags:', error);
     } finally {
@@ -76,9 +76,16 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
         await api.patch(`/jobs/${job.id}/status`, { newJobStatus: formData.status });
         await api.patch(`/jobs/${job.id}/appliedAt`, { newTime: jobData.appliedAt });
         
-        // Update tags (simplified - in real implementation, you'd handle additions/removals)
-        // This is a placeholder for tag management
-        
+        const oldTagIds = job.tags?.map(tag => tag._id.toString()) || [];
+        const newTagIds = selectedTags;
+        const tagsToAdd = newTagIds.filter(id => !oldTagIds.includes(id));
+        const tagsToRemove = oldTagIds.filter(id => !newTagIds.includes(id));
+        for (const tagId of tagsToAdd) {
+          await api.post(`/jobs/${job.id}/tags`, { tagId });
+        }
+        for (const tagId of tagsToRemove) {
+          await api.delete(`/jobs/${job.id}/tags/${tagId}`);
+        }
         toast.success('Job updated successfully!');
       } else {
         // Create new job
@@ -162,12 +169,12 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
               >
-                <option value="applied">Applied</option>
-                <option value="interview">Interview</option>
-                <option value="offer">Offer</option>
-                <option value="rejected">Rejected</option>
-                <option value="wishlit">Wishlist</option>
-                <option value="withdrawn">Withdrawn</option>
+                <option value="Applied">Applied</option>
+                <option value="Interview">Interview</option>
+                <option value="Offer">Offer</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Wishlit">Wishlist</option>
+                <option value="Withdrawn">Withdrawn</option>
               </select>
             </div>
 

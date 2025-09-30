@@ -48,10 +48,11 @@ export const addJob = async (req: AuthenticatedRequest, res: Response, next: Nex
     }
 }
 
+// Support tagId as a query parameter to only return jobs that have that tag.
 export const getJobs = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.id;
-    const { search, sortBy = 'createdAt', order = 'desc' } = req.query;
+    const { search, sortBy = 'createdAt', order = 'desc', tagId } = req.query; // ⚡ Added tagId
 
     const filter: any = { userId };
     if (typeof search === 'string' && search.trim() !== '') {
@@ -61,28 +62,34 @@ export const getJobs = async (req: AuthenticatedRequest, res: Response, next: Ne
     const sortField = typeof sortBy === 'string' ? sortBy : 'createdAt';
     const sortOrder = order === 'asc' ? 1 : -1;
 
-    // Step 1: Get all jobs
-    const jobs = await Job.find(filter).sort({ [sortField]: sortOrder });
+    let jobs;
+    if (tagId && typeof tagId === 'string') { // Filter jobs by tag
+      const jobTagLinks = await JobTag.find({ tagId }).select('jobId').lean();
+      const jobIds = jobTagLinks.map(jt => jt.jobId);
+
+      filter._id = { $in: jobIds }; // Only include jobs linked to the tag
+      jobs = await Job.find(filter).sort({ [sortField]: sortOrder });
+    } else {
+      jobs = await Job.find(filter).sort({ [sortField]: sortOrder });
+    }
 
     // Step 2: Get all related JobTags
-    // Array of jobIds
     const jobIds = jobs.map(job => job._id);
-    // Array of jobTags
     const jobTags = await JobTag.find({ jobId: { $in: jobIds } })
       .populate('tagId', 'name colour')
       .lean();
 
     // Step 3: Group tags by jobId
-    const tagsByJob: Record<string, { id: string; name: string; color: string }[]> = {};
+    const tagsByJob: Record<string, { _id: string; name: string; colour: string }[]> = {};
     for (const jt of jobTags) {
       const jobId = jt.jobId.toString();
       const tag = jt.tagId as unknown as typeTag;
       if (!tagsByJob[jobId]) tagsByJob[jobId] = [];
 
       tagsByJob[jobId].push({
-        id: tag._id.toString(),
+        _id: tag._id.toString(),
         name: tag.name,
-        color: tag.colour,
+        colour: tag.colour,
       });
     }
 
@@ -171,8 +178,8 @@ export const deleteJob = async (req: AuthenticatedRequest, res: Response, next: 
     try {
         const job = await assertJobOwnership(req.params.jobId, req.user?.id);
         await Job.deleteOne({_id: job._id})
+        await JobTag.deleteMany({ jobId: job._id });
         res.status(200).json({ message: 'Job deleted successfully', job});
-
     } catch (err) {
         next(err);
     }
@@ -180,9 +187,9 @@ export const deleteJob = async (req: AuthenticatedRequest, res: Response, next: 
 
 export const addJobTag = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const {tagName} = req.body;
+        const {tagId} = req.body;
         const {jobId} = req.params;
-        const existingTag = await Tag.findOne({ name: tagName });
+        const existingTag = await Tag.findOne({ _id: tagId });
         if (!existingTag) {
             return res.status(404).json({ message: 'Tag does not exist'});
         }
@@ -231,25 +238,28 @@ export const getJobTag = async (req: AuthenticatedRequest, res: Response, next: 
     }
 }
 
-export const getJobsByTag = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-        const tagId = req.query.tagId?.toString();
-        const userId = req.user?.id;
+// export const getJobsByTag = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+//     try {
+//         const {tagId} = req.params;
+//         const userId = req.user?.id;
 
-        if (!tagId) {
-        return res.status(400).json({ message: 'tagId query parameter is required' });
-        }
-        const tag = await Tag.findOne({ _id: tagId, userId });
-        if (!tag) {
-            return res.status(404).json({ message: 'Tag not found or does not belong to user' });
-        }
+//         if (!tagId) {
+//         return res.status(400).json({ message: 'tagId query parameter is required' });
+//         }
+//         const tag = await Tag.findOne({ _id: tagId, userId });
+//         if (!tag) {
+//             return res.status(404).json({ message: 'Tag not found or does not belong to user' });
+//         }
 
-        const tagObjectId = new mongoose.Types.ObjectId(tagId);
-        const jobTagLinks = await JobTag.find({ tagId });
-        const jobIds = jobTagLinks.map(link => link.jobId);
-        const jobs = await Job.find({ _id: { $in: jobIds }, userId });
-        res.status(200).json({ message: 'Jobs with specified tag returned successfully', jobs });
-    } catch (err) {
-        next(err);
-    }
-}
+//         const jobTagLinks = await JobTag.find({ tagId: tag._id });
+//         const jobIds = jobTagLinks.map(link => link.jobId);
+//         if (jobIds.length === 0) {
+//             return res.status(200).json({ message: 'No jobs for this tag', jobs: [] });
+//         }
+
+//         const jobs = await Job.find({ _id: { $in: jobIds }, userId: userId });
+//         res.status(200).json({ message: 'Jobs with specified tag returned successfully', jobs });
+//     } catch (err) {
+//         next(err);
+//     }
+// }

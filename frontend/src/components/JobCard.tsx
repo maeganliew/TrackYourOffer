@@ -22,7 +22,7 @@ const JobCard: React.FC<JobCardProps> = ({
   const [tempDate, setTempDate] = useState(
     job.appliedAt ? job.appliedAt.split('T')[0] : new Date().toISOString().split('T')[0]
   );
-  const getStatusColor = (status: string) => {
+  const getStatusColour = (status: string) => {
     switch (status) {
       case 'applied': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'interview': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -56,7 +56,7 @@ const JobCard: React.FC<JobCardProps> = ({
             {job.name}
           </h3>
           <div className="mt-2 flex items-center space-x-4">
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(job.status)}`}>
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColour(job.status)}`}>
               {job.status}
             </span>
             <div className="flex items-center text-sm text-gray-500">
@@ -110,9 +110,9 @@ const JobCard: React.FC<JobCardProps> = ({
                 key={tag._id}
                 className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
                 style={{
-                  backgroundColor: `${tag.colour}20`,
+                  backgroundColor: `${tag.colour}15`,
                   color: tag.colour,
-                  border: `1px solid ${tag.colour}40`,
+                  borderColor: `${tag.colour}30`,
                 }}
               >
                 {tag.name}
@@ -129,12 +129,12 @@ const JobCard: React.FC<JobCardProps> = ({
           onChange={(e) => onStatusChange(job.id, e.target.value as Job['status'])}
           className="text-sm border border-gray-200 rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
         >
-          <option value="applied">Applied</option>
-          <option value="interview">Interview</option>
-          <option value="offer">Offer</option>
-          <option value="rejected">Rejected</option>
-          <option value="wishlist">Wishlist</option>
-          <option value="withdrawn">Withdrawn</option>
+          <option value="Applied">Applied</option>
+          <option value="Interview">Interview</option>
+          <option value="Offer">Offer</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Wishlist">Wishlist</option>
+          <option value="Withdrawn">Withdrawn</option>
         </select>
         <span className="text-xs text-gray-500">
           Added {format(new Date(job.createdAt), 'MMM d')}
