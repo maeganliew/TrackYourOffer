@@ -1,3 +1,5 @@
+import { JobStatus } from "../../../backend/src/Constants";
+
 export interface User {
   id: string;
   username: string;
@@ -7,7 +9,7 @@ export interface User {
 export interface Job {
   id: string;
   name: string;
-  status: 'Applied' | 'Interview' | 'Offer' | 'Rejected' | 'Withdrawn' | 'Wishlist';
+  status: JobStatus;
   appliedAt: string;
   createdAt: string;
   updatedAt: string;

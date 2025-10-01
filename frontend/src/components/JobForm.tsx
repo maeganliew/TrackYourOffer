@@ -3,6 +3,7 @@ import { X, Plus } from 'lucide-react';
 import { Job, Tag } from '../types';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import { JobStatus, allowedJobStatus } from '../../../backend/src/Constants'
 
 interface JobFormProps {
   isOpen: boolean;
@@ -110,7 +111,13 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+      const { name, value } = e.target;
+
+      setFormData({
+        ...formData,
+        // if name is not status, update as usual, if yes, update it as of type JobStatus
+        [name]: name === 'status' ? (value as JobStatus) : value,
+      });
   };
 
   const toggleTag = (tagId: string) => {
@@ -164,17 +171,16 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
               </label>
               <select
                 id="status"
-                name="status"
+                name="status" // so that handleChange uses it to know which field in formData to update
                 value={formData.status}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
               >
-                <option value="Applied">Applied</option>
-                <option value="Interview">Interview</option>
-                <option value="Offer">Offer</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Wishlit">Wishlist</option>
-                <option value="Withdrawn">Withdrawn</option>
+                {allowedJobStatus.map(status => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
               </select>
             </div>
 

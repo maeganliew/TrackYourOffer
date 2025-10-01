@@ -78,7 +78,7 @@ const Jobs: React.FC = () => {
 
   const handleStatusChange = async (jobId: string, status: Job['status']) => {
     try {
-      await api.patch(`/jobs/${jobId}/status`, { status });
+      await api.patch(`/jobs/${jobId}/status`, { newJobStatus: status });
       setJobs(jobs.map(job => 
         job.id === jobId ? { ...job, status } : job
       ));
@@ -90,8 +90,10 @@ const Jobs: React.FC = () => {
 
   const handleDateChange = async (jobId: string, date: string) => {
     try {
-      await api.patch(`/jobs/${jobId}/appliedAt`, { appliedAt: date });
+      console.log(jobId, date);
+      await api.patch(`/jobs/${jobId}/appliedAt`, { newTime: date });
       setJobs(jobs.map(job => 
+        // cannot set newTime, cuz jobCard reads appliedAt
         job.id === jobId ? { ...job, appliedAt: date } : job
       ));
       toast.success('Date updated successfully!');

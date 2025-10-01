@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
@@ -16,9 +15,13 @@ import Tags from './pages/Tags';
 import Profile from './pages/Profile';
 
 // Utils
-import { isAuthenticated } from './utils/auth';
+import { useAuth } from './context/AuthContext';
+
 
 function App() {
+const { user, loading } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
   return (
     <Router>
       <div className="App">
@@ -26,11 +29,11 @@ function App() {
           {/* Public Routes */}
           <Route
             path="/login"
-            element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <Login />}
+            element={user ? <Navigate to="/dashboard" replace /> : <Login />}
           />
           <Route
             path="/register"
-            element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <Register />}
+            element={user ? <Navigate to="/dashboard" replace /> : <Register />}
           />
 
           {/* Protected Routes */}
@@ -89,7 +92,7 @@ function App() {
           <Route
             path="/"
             element={
-              <Navigate to={isAuthenticated() ? "/dashboard" : "/login"} replace />
+              <Navigate to={user ? "/dashboard" : "/login"} replace />
             }
           />
 
@@ -97,7 +100,7 @@ function App() {
           <Route
             path="*"
             element={
-              <Navigate to={isAuthenticated() ? "/dashboard" : "/login"} replace />
+              <Navigate to={user ? "/dashboard" : "/login"} replace />
             }
           />
         </Routes>

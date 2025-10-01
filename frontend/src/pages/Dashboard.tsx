@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Briefcase, Tag, Clock, TrendingUp } from 'lucide-react';
 import api from '../api/axios';
 import { DashboardStats } from '../types';
+import { getStatusColour } from '../../../backend/src/Constants'
 import { format } from 'date-fns';
 
 const Dashboard: React.FC = () => {
@@ -15,67 +16,51 @@ const Dashboard: React.FC = () => {
   const fetchStats = async () => {
     try {
       // Mock data for demonstration - replace with actual API call
-      const mockStats: DashboardStats = {
-        totalJobs: 24,
-        jobsByStatus: {
-          applied: 12,
-          interview: 5,
-          offer: 2,
-          rejected: 4,
-          withdrawn: 1,
-        },
-        jobsByTag: {
-          'Frontend': 8,
-          'React': 6,
-          'Remote': 10,
-          'Full-time': 15,
-        },
-        recentActivity: [
-          {
-            id: '1',
-            action: 'Applied to',
-            jobName: 'Senior Frontend Developer at TechCorp',
-            timestamp: new Date().toISOString(),
-          },
-          {
-            id: '2',
-            action: 'Updated status for',
-            jobName: 'Full Stack Engineer at StartupXYZ',
-            timestamp: new Date(Date.now() - 86400000).toISOString(),
-          },
-          {
-            id: '3',
-            action: 'Added tag to',
-            jobName: 'React Developer at DesignCo',
-            timestamp: new Date(Date.now() - 172800000).toISOString(),
-          },
-        ],
-      };
-      
-      // Simulate API call
-      setTimeout(() => {
-        setStats(mockStats);
-        setIsLoading(false);
-      }, 500);
+      // const mockStats: DashboardStats = {
+      //   totalJobs: 24,
+      //   jobsByStatus: {
+      //     applied: 12,
+      //     interview: 5,
+      //     offer: 2,
+      //     rejected: 4,
+      //     withdrawn: 1,
+      //   },
+      //   jobsByTag: {
+      //     'Frontend': 8,
+      //     'React': 6,
+      //     'Remote': 10,
+      //     'Full-time': 15,
+      //   },
+      //    recentActivity: [
+      //     {
+      //       id: '1',
+      //       action: 'Applied to',
+      //       jobName: 'Senior Frontend Developer at TechCorp',
+      //       timestamp: new Date().toISOString(),
+      //      },
+      //     {
+      //        id: '2',
+      //        action: 'Updated status for',
+      //        jobName: 'Full Stack Engineer at StartupXYZ',
+      //      timestamp: new Date(Date.now() - 86400000).toISOString(),
+      //     },
+      //      {
+      //       id: '3',
+      //        action: 'Added tag to',
+      //  jobName: 'React Developer at DesignCo',
+      //    timestamp: new Date(Date.now() - 172800000).toISOString(),
+      //      },
+      // ],
+      // };
 
-      // Actual API call (uncomment when backend is ready):
-      // const response = await api.get<DashboardStats>('/dashboard/stats');
-      // setStats(response.data);
-      // setIsLoading(false);
+      // Actual API call
+      const response = await api.get('/dashboard/stats');
+      setStats(response.data.dashboardstats);
+      console.log(response.data.dashboardstats);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching stats:', error);
       setIsLoading(false);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'applied': return 'text-blue-600 bg-blue-100';
-      case 'interview': return 'text-yellow-600 bg-yellow-100';
-      case 'offer': return 'text-green-600 bg-green-100';
-      case 'rejected': return 'text-red-600 bg-red-100';
-      case 'withdrawn': return 'text-gray-600 bg-gray-100';
-      default: return 'text-gray-600 bg-gray-100';
     }
   };
 
@@ -143,7 +128,7 @@ const Dashboard: React.FC = () => {
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">In Progress</dt>
                   <dd className="text-2xl font-semibold text-gray-900">
-                    {stats.jobsByStatus.applied + stats.jobsByStatus.interview}
+                    {stats.jobsByStatus.Applied?stats.jobsByStatus.Applied:0 + stats.jobsByStatus.Interview?stats.jobsByStatus.Interview:0}
                   </dd>
                 </dl>
               </div>
@@ -160,7 +145,7 @@ const Dashboard: React.FC = () => {
               <div className="ml-4 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Offers</dt>
-                  <dd className="text-2xl font-semibold text-gray-900">{stats.jobsByStatus.offer}</dd>
+                  <dd className="text-2xl font-semibold text-gray-900">{stats.jobsByStatus.offer? stats.jobsByStatus.offer : 0}</dd>
                 </dl>
               </div>
             </div>
@@ -195,7 +180,7 @@ const Dashboard: React.FC = () => {
             {Object.entries(stats.jobsByStatus).map(([status, count]) => (
               <div key={status} className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusColor(status)}`}>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusColour(status)}`}>
                     {status}
                   </span>
                 </div>
@@ -218,7 +203,7 @@ const Dashboard: React.FC = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
           <div className="flow-root">
             <ul className="-mb-8">
-              {stats.recentActivity.map((activity, idx) => (
+              {/* {stats.recentActivity.map((activity, idx) => (
                 <li key={activity.id}>
                   <div className="relative pb-8">
                     {idx !== stats.recentActivity.length - 1 && (
@@ -244,7 +229,7 @@ const Dashboard: React.FC = () => {
                     </div>
                   </div>
                 </li>
-              ))}
+              ))} */}
             </ul>
           </div>
         </div>

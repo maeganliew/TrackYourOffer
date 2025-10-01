@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, CreditCard as Edit, Trash2, Tag as TagIcon } from 'lucide-react';
 import { Job } from '../types';
 import { format } from 'date-fns';
+import { getStatusColour, JobStatus, allowedJobStatus } from '../../../backend/src/Constants'
 
 interface JobCardProps {
   job: Job;
@@ -18,24 +19,18 @@ const JobCard: React.FC<JobCardProps> = ({
   onStatusChange,
   onDateChange
 }) => {
+  
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [tempDate, setTempDate] = useState(
     job.appliedAt ? job.appliedAt.split('T')[0] : new Date().toISOString().split('T')[0]
   );
-  const getStatusColour = (status: string) => {
-    switch (status) {
-      case 'applied': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'interview': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'offer': return 'bg-green-100 text-green-800 border-green-200';
-      case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-      case 'withdrawn': return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'wishlist': return 'bg-pink-100 text-pink-800 border-pink-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+
+  useEffect(() => {
+    setTempDate(job.appliedAt ? job.appliedAt.split('T')[0] : new Date().toISOString().split('T')[0]);
+  }, [job.appliedAt]);
 
   const handleDateSubmit = () => {
-    onDateChange(job.id, new Date(tempDate).toISOString());
+    onDateChange(job.id , new Date(tempDate).toISOString());
     setIsEditingDate(false);
   };
 
@@ -124,18 +119,19 @@ const JobCard: React.FC<JobCardProps> = ({
 
       {/* Status Dropdown */}
       <div className="flex items-center justify-between">
-        <select
-          value={job.status}
-          onChange={(e) => onStatusChange(job.id, e.target.value as Job['status'])}
-          className="text-sm border border-gray-200 rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-        >
-          <option value="Applied">Applied</option>
-          <option value="Interview">Interview</option>
-          <option value="Offer">Offer</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Wishlist">Wishlist</option>
-          <option value="Withdrawn">Withdrawn</option>
-        </select>
+      
+      <select
+      /* avoid hardcoding here */
+        value={job.status}
+        onChange={(e) => onStatusChange(job.id, e.target.value as JobStatus)}
+        className="text-sm border border-gray-200 rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+      >
+        {allowedJobStatus.map(status => (
+          <option key={status} value={status}>
+            {status}
+          </option>
+        ))}
+      </select>
         <span className="text-xs text-gray-500">
           Added {format(new Date(job.createdAt), 'MMM d')}
         </span>

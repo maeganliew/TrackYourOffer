@@ -14,7 +14,7 @@ const jobSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: allowedJobStatus,
-    default: "wishlist",
+    default: "Wishlist",
   },
   appliedAt: {
     type: Date,

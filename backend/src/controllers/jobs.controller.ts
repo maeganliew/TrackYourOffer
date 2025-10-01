@@ -151,6 +151,7 @@ export const changeJobDate = async (req: AuthenticatedRequest, res: Response, ne
     try {
         // string sent from frontend
         const newTimeRaw = req.body.newTime?.trim();
+        console.log(newTimeRaw, req.body.newTime)
         if (!newTimeRaw) {
             return res.status(400).json({ message: 'New application date is required' });
         }
