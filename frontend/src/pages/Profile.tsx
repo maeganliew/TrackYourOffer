@@ -79,12 +79,14 @@ const Profile: React.FC = () => {
           isLoading={isLoading}
         />
       </div>
+      <div className="mt-10">
       <button
         onClick={logout}
         className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-colors"
       >
         Logout
       </button>
+      </div>
     </div>
   );
 };

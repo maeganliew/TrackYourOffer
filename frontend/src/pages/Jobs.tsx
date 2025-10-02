@@ -90,14 +90,13 @@ const Jobs: React.FC = () => {
 
   const handleDateChange = async (jobId: string, date: string) => {
     try {
-      console.log(jobId, date);
       await api.patch(`/jobs/${jobId}/appliedAt`, { newTime: date });
       setJobs(jobs.map(job => 
         // cannot set newTime, cuz jobCard reads appliedAt
         job.id === jobId ? { ...job, appliedAt: date } : job
       ));
       toast.success('Date updated successfully!');
-    } catch (error) {
+    } catch (error) { 
       console.error('Error updating date:', error);
     }
   };

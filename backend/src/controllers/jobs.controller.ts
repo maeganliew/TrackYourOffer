@@ -113,8 +113,35 @@ export const getJobs = async (req: AuthenticatedRequest, res: Response, next: Ne
 
 export const getJob = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const job = await Job.find({ userId: req.user?.id });
-        res.status(200).json({ message: 'Job returned successfully', job});
+        const { jobId } = req.params;
+        const job = await Job.findOne({ userId: req.user?.id, _id: jobId });
+        
+        if (!job) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        // also fetch tags
+        const jobTags = await JobTag.find({ jobId }).populate('tagId', 'name colour').lean();
+        const tags = jobTags.map(jt => {
+            const tag = jt.tagId as any;
+            return {
+                _id: tag._id.toString(),
+                name: tag.name,
+                colour: tag.colour,
+            };
+        });
+        res.status(200).json({
+            message: 'Job returned successfully',
+            job: {
+                id: job._id.toString(),
+                name: job.name,
+                status: job.status,
+                appliedAt: job.appliedAt,
+                createdAt: job.createdAt,
+                updatedAt: job.updatedAt,
+                tags, //include tags directly in response
+            },
+        });    
     } catch (err) {
         next(err);
     }

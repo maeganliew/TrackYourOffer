@@ -5,6 +5,9 @@ import { Job, Tag } from '../types';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { getStatusColour } from '../../../backend/src/Constants'
+import JobForm from '../components/JobForm';
+import { useLocation } from 'react-router-dom';
 
 const JobDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,82 +16,60 @@ const JobDetail: React.FC = () => {
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingTag, setIsAddingTag] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isTagsLoading, setIsTagsLoading] = useState(false);
+
+  const location = useLocation();
+  const passedJob = location.state?.job as Job | undefined;
 
   useEffect(() => {
+    if (passedJob) {
+      // Use the passed job for faster display
+      setJob(passedJob);
+      if (passedJob.tags) {
+        setJobTags(passedJob.tags);
+      }
+      fetchAvailableTags(); // still fetch all tags for dropdown
+      setIsLoading(false);
+    } 
     if (id) {
+      // fallback to fetching job + tags if passedJob doesn't exist
       fetchJob();
-      fetchJobTags();
       fetchAvailableTags();
     }
   }, [id]);
 
   const fetchJob = async () => {
     try {
-      // Mock data - replace with actual API call
-      const mockJob: Job = {
-        id: id!,
-        name: 'Senior Frontend Developer at TechCorp',
-        status: 'interview',
-        applied_time: new Date(Date.now() - 86400000).toISOString(),
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        updatedAt: new Date(Date.now() - 43200000).toISOString(),
-      };
-      setJob(mockJob);
-
-      // Actual API call (uncomment when backend is ready):
-      // const response = await api.get<Job>(`/jobs/${id}`);
-      // setJob(response.data);
+      const response = await api.get(`/jobs/${id}`);
+      const jobData = response.data.job;
+      //setJob(jobData);
+      setTimeout(() => setJob(jobData), 0);
+      setJobTags(jobData.tags || []);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching job:', error);
       toast.error('Failed to load job details');
     }
   };
 
-  const fetchJobTags = async () => {
-    try {
-      // Mock data - replace with actual API call
-      const mockTags: Tag[] = [
-        { id: '1', name: 'Frontend', color: '#3B82F6', createdAt: new Date().toISOString() },
-        { id: '2', name: 'React', color: '#10B981', createdAt: new Date().toISOString() },
-        { id: '3', name: 'Remote', color: '#8B5CF6', createdAt: new Date().toISOString() },
-      ];
-      setJobTags(mockTags);
-
-      // Actual API call (uncomment when backend is ready):
-      // const response = await api.get<Tag[]>(`/jobs/${id}/tags`);
-      // setJobTags(response.data);
-    } catch (error) {
-      console.error('Error fetching job tags:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const fetchAvailableTags = async () => {
+    setIsTagsLoading(true);
     try {
-      // Mock data - replace with actual API call
-      const mockTags: Tag[] = [
-        { id: '1', name: 'Frontend', color: '#3B82F6', createdAt: new Date().toISOString() },
-        { id: '2', name: 'React', color: '#10B981', createdAt: new Date().toISOString() },
-        { id: '3', name: 'Remote', color: '#8B5CF6', createdAt: new Date().toISOString() },
-        { id: '4', name: 'Full-time', color: '#F59E0B', createdAt: new Date().toISOString() },
-        { id: '5', name: 'TypeScript', color: '#EF4444', createdAt: new Date().toISOString() },
-      ];
-      setAvailableTags(mockTags);
-
-      // Actual API call (uncomment when backend is ready):
-      // const response = await api.get<Tag[]>('/tags');
-      // setAvailableTags(response.data);
+      const response = await api.get('/tags');
+      setAvailableTags(response.data.tags);
     } catch (error) {
-      console.error('Error fetching available tags:', error);
+      console.error('Error fetching tags:', error);
+    } finally {
+      setIsTagsLoading(false);
     }
   };
 
   const handleAddTag = async (tagId: string) => {
     try {
       await api.post(`/jobs/${id}/tags`, { tagId });
-      const addedTag = availableTags.find(tag => tag.id === tagId);
-      if (addedTag && !jobTags.find(tag => tag.id === tagId)) {
+      const addedTag = availableTags.find(tag => tag._id === tagId);
+      if (addedTag && !jobTags.find(tag => tag._id === tagId)) {
         setJobTags([...jobTags, addedTag]);
         toast.success('Tag added successfully!');
       }
@@ -101,21 +82,10 @@ const JobDetail: React.FC = () => {
   const handleRemoveTag = async (tagId: string) => {
     try {
       await api.delete(`/jobs/${id}/tags/${tagId}`);
-      setJobTags(jobTags.filter(tag => tag.id !== tagId));
+      setJobTags(jobTags.filter(tag => tag._id !== tagId));
       toast.success('Tag removed successfully!');
     } catch (error) {
       console.error('Error removing tag:', error);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'applied': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'interview': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'offer': return 'bg-green-100 text-green-800 border-green-200';
-      case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-      case 'withdrawn': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -155,7 +125,7 @@ const JobDetail: React.FC = () => {
   }
 
   const availableTagsToAdd = availableTags.filter(
-    tag => !jobTags.find(jobTag => jobTag.id === tag.id)
+    tag => !jobTags.find(jobTag => jobTag._id === tag._id)
   );
 
   return (
@@ -178,12 +148,12 @@ const JobDetail: React.FC = () => {
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-900 mb-2">{job.name}</h1>
               <div className="flex items-center space-x-4">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(job.status)}`}>
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColour(job.status)}`}>
                   {job.status}
                 </span>
                 <div className="flex items-center text-sm text-gray-500">
                   <Calendar className="h-4 w-4 mr-1" />
-                  Applied on {format(new Date(job.applied_time), 'MMMM d, yyyy')}
+                  Applied on {format(new Date(job.appliedAt), 'MMMM d, yyyy')}
                 </div>
               </div>
             </div>
@@ -203,7 +173,7 @@ const JobDetail: React.FC = () => {
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Applied:</span>
                   <span className="text-sm font-medium text-gray-900">
-                    {format(new Date(job.applied_time), 'MMM d, yyyy')}
+                    {format(new Date(job.appliedAt), 'MMM d, yyyy')}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -234,18 +204,18 @@ const JobDetail: React.FC = () => {
                   {jobTags.length > 0 ? (
                     jobTags.map((tag) => (
                       <div
-                        key={tag.id}
+                        key={tag._id}
                         className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium group"
                         style={{
-                          backgroundColor: `${tag.color}20`,
-                          color: tag.color,
-                          border: `1px solid ${tag.color}40`,
+                          backgroundColor: `${tag.colour}20`,
+                          color: tag.colour,
+                          border: `1px solid ${tag.colour}40`,
                         }}
                       >
                         <TagIcon className="h-3 w-3 mr-1" />
                         {tag.name}
                         <button
-                          onClick={() => handleRemoveTag(tag.id)}
+                          onClick={() => handleRemoveTag(tag._id)}
                           className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X className="h-3 w-3 hover:text-red-600" />
@@ -265,8 +235,8 @@ const JobDetail: React.FC = () => {
                       {availableTagsToAdd.length > 0 ? (
                         availableTagsToAdd.map((tag) => (
                           <button
-                            key={tag.id}
-                            onClick={() => handleAddTag(tag.id)}
+                            key={tag._id}
+                            onClick={() => handleAddTag(tag._id)}
                             className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                           >
                             <TagIcon className="h-3 w-3 mr-1" />
@@ -292,14 +262,21 @@ const JobDetail: React.FC = () => {
           {/* Actions */}
           <div className="border-t border-gray-200 pt-6">
             <div className="flex justify-end space-x-3">
-              <Link
-                to={`/jobs/${job.id}/edit`}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border border-transparent rounded-md hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-              >
-                Edit Job
-              </Link>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100"
+            >
+              Edit Job
+            </button>
             </div>
           </div>
+
+          <JobForm
+            isOpen={isEditing}
+            onClose={() => setIsEditing(false)}
+            onSuccess={fetchJob} // re-fetch job after update
+            job={job}
+          />
         </div>
       </div>
     </div>
