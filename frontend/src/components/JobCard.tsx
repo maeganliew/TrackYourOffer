@@ -45,13 +45,14 @@ const JobCard: React.FC<JobCardProps> = ({
   };
 
   return (
-    <Link to={`/jobs/${job.id}`} state = {{ job }} className="block hover:shadow-md transition-all duration-200">
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
-              {job.name}
-            </h3>
+            <Link to={`/jobs/${job.id}`} state = {{ job }} className="block hover:shadow-md transition-all duration-200">
+              <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
+                {job.name}
+              </h3>
+            </Link>
             <div className="mt-2 flex items-center space-x-4">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColour(job.status)}`}>
                 {job.status}
@@ -138,7 +139,6 @@ const JobCard: React.FC<JobCardProps> = ({
           </span>
         </div>
       </div>
-    </Link>
   );
 };
 

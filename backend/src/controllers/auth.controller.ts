@@ -11,13 +11,13 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         // User schema has 'select false' for passwords
         const existingUser =  await User.findOne({email: email}).select("+password");;
         if (!existingUser) {
-        return res.status(401).json({ message: "Invalid login credentials" });
+          return res.status(401).json({ message: "Invalid login credentials" });
         }
 
         //check hash here, verify pass
         const passMatch = await bcrypt.compare(password, existingUser.password);
         if (!passMatch) {
-        return res.status(401).json({ message: "Invalid login credentials" });
+          return res.status(401).json({ message: "Invalid login credentials" });
         }
 
         // conversion from _id to id here

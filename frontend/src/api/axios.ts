@@ -22,15 +22,15 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const url = error.config?.url;
+
+    // for non-login attempts, log out
+    if (status === 401 && url !== '/auth/login') {
       localStorage.removeItem('jobtracker_token');
       localStorage.removeItem('jobtracker_user');
-      window.location.href = '/login';
       toast.error('Session expired. Please log in again.');
-    } else if (error.response?.data?.message) {
-      toast.error(error.response.data.message);
-    } else {
-      toast.error('Something went wrong. Please try again.');
+      setTimeout(() => window.location.href = '/login', 300); // small delay to show toast
     }
     return Promise.reject(error);
   }

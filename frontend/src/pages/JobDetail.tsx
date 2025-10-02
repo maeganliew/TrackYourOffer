@@ -32,8 +32,11 @@ const JobDetail: React.FC = () => {
       fetchAvailableTags(); // still fetch all tags for dropdown
       setIsLoading(false);
     } 
+    // In JobCard, always rendering from the fresh jobs list (from state) via fetchJobs().But in JobDetail, rendering from a stale passedJob (from location.state), it's not overriding it fully after edit.
+    // in job form, on submit form it calls onSuccess() in Jobs, then Job calls fetchJobs(). so jobCard's data is fresh
+    // but JobDetail it relies only on passedJob from location.state, it becomes stale after edits.
     if (id) {
-      // fallback to fetching job + tags if passedJob doesn't exist
+      // if there's id, call fetchJob, refresh data. this guarantees a fresh fetch every time the id changes (or on mount).
       fetchJob();
       fetchAvailableTags();
     }

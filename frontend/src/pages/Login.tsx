@@ -6,6 +6,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext'
 import { AuthResponse } from '../types';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -30,11 +31,18 @@ const handleSubmit = async (e: React.FormEvent) => {
     // 2️⃣ navigate **after context state updates**
     setTimeout(() => {
       navigate('/dashboard');
-    }, 0);
+    }, 300);
 
     toast.success('Welcome back!');
   } catch (err) {
     console.error(err);
+    // Type guard for Axios errors
+    if (axios.isAxiosError(err)) {
+      const message = err.response?.data?.message || 'Something went wrong. Please try again.';
+      toast.error(message);
+    } else {
+      toast.error('Something went wrong. Please try again.');
+    }
   } finally {
     setIsLoading(false);
   }
