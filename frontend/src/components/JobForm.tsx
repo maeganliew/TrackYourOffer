@@ -23,6 +23,9 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [isTagsLoading, setIsTagsLoading] = useState(false);
 
+  const [file, setFile] = useState<File | null>(null);
+const [existingFile, setExistingFile] = useState(job?.file || null);
+
   useEffect(() => {
     // populate form with existing job data when form is opened
     if (isOpen) {
@@ -33,6 +36,8 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
           appliedAt: job.appliedAt ? job.appliedAt.split('T')[0] : ''        
         });
         setSelectedTags(job.tags?.map(tag => tag._id) || []);
+        setExistingFile(job.file || null);
+
       } else {
         setFormData({
           name: '',
@@ -40,6 +45,8 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
           appliedAt: new Date().toISOString().split('T')[0],
         });
         setSelectedTags([]);
+        setExistingFile(null);
+
       }
       fetchTags();
     }
@@ -56,6 +63,17 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
     } finally {
       setIsTagsLoading(false);
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleFileRemove = () => {
+    setFile(null);
+    setExistingFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,7 +94,18 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
         await api.patch(`/jobs/${job.id}/name`, { newJobName: formData.name });
         await api.patch(`/jobs/${job.id}/status`, { newJobStatus: formData.status });
         await api.patch(`/jobs/${job.id}/appliedAt`, { newTime: jobData.appliedAt });
-        
+
+        // File Upload
+        if (file) {
+          const formDataFile = new FormData();
+          formDataFile.append('file', file);
+          await api.post(`/jobs/${job.id}/file`, formDataFile, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+        } else if (!existingFile && job.file) {
+          await api.delete(`/jobs/${job.id}/file`);
+        }
+
         const oldTagIds = job.tags?.map(tag => tag._id.toString()) || [];
         const newTagIds = selectedTags;
         const tagsToAdd = newTagIds.filter(id => !oldTagIds.includes(id));
@@ -90,14 +119,23 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
         toast.success('Job updated successfully!');
       } else {
         // Create new job
-        const response = await api.post('/jobs', jobData);
-        const newJobId = response.data.id;
-        
+      // === CREATE NEW ===
+      const formDataJob = new FormData();
+      formDataJob.append('name', jobData.name);
+      formDataJob.append('status', jobData.status);
+      formDataJob.append('appliedAt', jobData.appliedAt);
+      if (file) {
+        formDataJob.append('file', file);
+      }
+
+      const response = await api.post('/jobs', formDataJob, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+        const newJobId = response.data.id;        
         // Add selected tags to the job
         for (const tagId of selectedTags) {
           await api.post(`/jobs/${newJobId}/tags`, { tagId });
         }
-        
         toast.success('Job added successfully!');
       }
       
@@ -105,6 +143,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
       onClose();
     } catch (error) {
       console.error('Error saving job:', error);
+      toast.error('Failed to save job');
     } finally {
       setIsLoading(false);
     }
@@ -226,6 +265,45 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
                 </div>
               )}
             </div>
+
+
+
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Attachment (Image or PDF)
+  </label>
+
+  {existingFile && (
+    <div className="mb-2 flex items-center justify-between p-2 bg-gray-100 rounded">
+      <span className="text-sm truncate max-w-[80%]">{existingFile.filename}</span>
+      <button
+        type="button"
+        onClick={() => {
+          setExistingFile(null);
+          setFile(null);
+        }}
+        className="text-red-500 hover:text-red-700 text-xs"
+      >
+        Remove
+      </button>
+    </div>
+  )}
+
+  <input
+    type="file"
+    accept="image/*,application/pdf"
+    onChange={(e) => {
+      if (e.target.files && e.target.files[0]) {
+        setFile(e.target.files[0]);
+      }
+    }}
+  />
+</div>
+
+
+
+
+
 
             <div className="flex justify-end space-x-3 pt-4">
               <button

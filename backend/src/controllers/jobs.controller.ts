@@ -41,7 +41,18 @@ export const addJob = async (req: AuthenticatedRequest, res: Response, next: Nex
                 return res.status(400).json({ message: 'Application date cannot be in the future' });
             }
         }
-        const job = await Job.create({ userId: req.user?.id, name, status, appliedAt});
+
+        const fileData = req.file
+            ? {
+                file: {
+                    url: (req.file as any).path,
+                    type: req.file.mimetype.includes('pdf') ? 'pdf' : 'image',
+                    filename: req.file.originalname,
+                }
+                }
+            : {};
+
+        const job = await Job.create({ userId: req.user?.id, name, status, appliedAt, ...fileData});
         res.status(201).json({ message: 'Job created successfully', job });
     } catch (err) {
         next(err);
@@ -52,7 +63,7 @@ export const addJob = async (req: AuthenticatedRequest, res: Response, next: Nex
 export const getJobs = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.id;
-    const { search, sortBy = 'createdAt', order = 'desc', tagId } = req.query; // ⚡ Added tagId
+    const { search, sortBy = 'createdAt', order = 'desc', tagId } = req.query; // Added tagId
 
     const filter: any = { userId };
     if (typeof search === 'string' && search.trim() !== '') {
@@ -102,6 +113,11 @@ export const getJobs = async (req: AuthenticatedRequest, res: Response, next: Ne
       createdAt: job.createdAt,
       updatedAt: job.updatedAt,
       tags: tagsByJob[job._id.toString()] || [],
+      file: job.file ? {
+            url: job.file.url,
+            type: job.file.type,
+            filename: job.file.filename
+        } : undefined,
     }));
 
     res.status(200).json({ message: 'Jobs returned successfully', jobs: jobsWithTags });
@@ -140,6 +156,11 @@ export const getJob = async (req: AuthenticatedRequest, res: Response, next: Nex
                 createdAt: job.createdAt,
                 updatedAt: job.updatedAt,
                 tags, //include tags directly in response
+                file: job.file ? {
+                    url: job.file.url,
+                    type: job.file.type,
+                    filename: job.file.filename
+                } : undefined,
             },
         });    
     } catch (err) {
@@ -178,7 +199,6 @@ export const changeJobDate = async (req: AuthenticatedRequest, res: Response, ne
     try {
         // string sent from frontend
         const newTimeRaw = req.body.newTime?.trim();
-        console.log(newTimeRaw, req.body.newTime)
         if (!newTimeRaw) {
             return res.status(400).json({ message: 'New application date is required' });
         }
@@ -291,3 +311,62 @@ export const getJobTag = async (req: AuthenticatedRequest, res: Response, next: 
 //         next(err);
 //     }
 // }
+
+
+export const uploadFile = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    const { jobId } = req.params;
+    const userId = req.user?.id;
+
+    const job = await Job.findOne({ _id: jobId, userId });
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found or unauthorized' });
+    }
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const uploadedFile = req.file as Express.Multer.File;
+    // Save file info to the job
+    job.file = {
+      url: uploadedFile.path, // This is the Cloudinary URL
+      type: uploadedFile.mimetype.includes('pdf') ? 'pdf' : 'image',
+      filename: uploadedFile.originalname,
+    };
+    await job.save();
+    res.status(200).json({ message: 'File uploaded successfully', job });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+export const deleteFile = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    const { jobId } = req.params;
+    const userId = req.user?.id;
+
+    const job = await Job.findOne({ _id: jobId, userId });
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found or unauthorized' });
+    }
+
+    if (!job.file || !job.file.url) {
+      return res.status(400).json({ message: 'No file to delete' });
+    }
+
+    // Optional: If you want to also delete the file from Cloudinary
+    // You must store public_id in DB when uploading to Cloudinary
+    // import cloudinary from '../utils/cloudinary';
+    // await cloudinary.uploader.destroy(job.file.public_id, { resource_type: 'raw' });
+
+    // Clear file info from job
+    job.file = null;
+    await job.save();
+
+    res.status(200).json({ message: 'File removed successfully' });
+  } catch (err) {
+    next(err);
+  }
+};

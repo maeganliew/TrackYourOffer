@@ -14,6 +14,11 @@ export interface Job {
   createdAt: string;
   updatedAt: string;
   tags?: Tag[];
+  file?: {
+    url: string;
+    type: 'image' | 'pdf';
+    filename: string;
+  };
 }
 
 export interface Tag {

@@ -18,6 +18,8 @@ const JobDetail: React.FC = () => {
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isTagsLoading, setIsTagsLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileUploadLoading, setFileUploadLoading] = useState(false);
 
   const location = useLocation();
   const passedJob = location.state?.job as Job | undefined;
@@ -89,6 +91,40 @@ const JobDetail: React.FC = () => {
       toast.success('Tag removed successfully!');
     } catch (error) {
       console.error('Error removing tag:', error);
+    }
+  };
+
+  const handleUploadFile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile || !job?.id) return;
+
+    setFileUploadLoading(true);
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      await api.post(`/jobs/${job.id}/file`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      toast.success('File uploaded successfully');
+      await fetchJob();
+    } catch (uploadErr) {
+      toast.error('Failed to upload file');
+      console.error(uploadErr);
+    } finally {
+      setFileUploadLoading(false);
+    }
+  };
+
+  const handleRemoveFile = async () => {
+    try {
+      await api.delete(`/jobs/${id}/file`);
+      toast.success('File removed successfully!');
+      setSelectedFile(null);
+      fetchJob();
+    } catch (error) {
+      console.error('File removal failed:', error);
+      toast.error('Failed to remove file');
     }
   };
 
@@ -185,101 +221,160 @@ const JobDetail: React.FC = () => {
                     {format(new Date(job.updatedAt), 'MMM d, yyyy')}
                   </span>
                 </div>
+
+                {/* Uploaded File */}
+                <div className="mt-6">
+                  <h3 className="text-sm font-medium text-gray-500 tracking-wide mb-2">Resume</h3>
+
+                {/* Uploaded File */}
+                <div className="mt-6">
+                  <h3 className="text-sm font-medium text-gray-500 tracking-wide mb-2">Resume</h3>
+
+                  {job.file?.url ? (
+                    <div className="flex items-center space-x-3">
+                      {/* Clickable file name box */}
+                      <a
+                        href={job.file.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm text-sm text-indigo-600 hover:underline"
+                      >
+                        📎 {job.file.filename || 'View File'}
+                      </a>
+
+                      {/* Separate delete button */}
+                      <button
+                        onClick={handleRemoveFile}
+                        className="text-gray-400 hover:text-red-500 transition-colors"
+                        title="Remove File"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a2 2 0 00-2-2H9a2 2 0 00-2 2m10 0H5" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                <form onSubmit={handleUploadFile} className="flex items-center space-x-3">
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                    className="text-sm text-gray-700"
+                    disabled={fileUploadLoading}
+                  />
+
+                  <button
+                    type="submit"
+                    className="text-xs text-indigo-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={fileUploadLoading}
+                  >
+                    {fileUploadLoading ? 'Uploading...' : '📤 Upload File'}
+                  </button>
+                </form>
+                  )}
+                </div>
               </div>
             </div>
+          </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                  Tags
-                </h3>
-                <button
-                  onClick={() => setIsAddingTag(!isAddingTag)}
-                  className="text-indigo-600 hover:text-indigo-500 transition-colors"
-                >
-                  <Plus className="h-4 w-4" />
-                </button>
-              </div>
-              
-              <div className="space-y-3">
-                {/* Current Tags */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                Tags
+              </h3>
+              <button
+                onClick={() => setIsAddingTag(!isAddingTag)}
+                className="text-indigo-600 hover:text-indigo-500 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+          </div>
+            
+          <div className="space-y-3">
+            {/* Current Tags */}
+            <div className="flex flex-wrap gap-2">
+              {jobTags.length > 0 ? (
+                jobTags.map((tag) => (
+                  <div
+                    key={tag._id}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium group"
+                    style={{
+                      backgroundColor: `${tag.colour}20`,
+                      color: tag.colour,
+                      border: `1px solid ${tag.colour}40`,
+                    }}
+                  >
+                    <TagIcon className="h-3 w-3 mr-1" />
+                    {tag.name}
+                    <button
+                      onClick={() => handleRemoveTag(tag._id)}
+                      className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3 hover:text-red-600" />
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 italic">No tags added yet</p>
+              )}
+            </div>
+
+            {/* Add Tag Section */}
+            {isAddingTag && (
+              <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-600 mb-2">Available tags:</p>
                 <div className="flex flex-wrap gap-2">
-                  {jobTags.length > 0 ? (
-                    jobTags.map((tag) => (
-                      <div
+                  {availableTagsToAdd.length > 0 ? (
+                    availableTagsToAdd.map((tag) => (
+                      <button
                         key={tag._id}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium group"
-                        style={{
-                          backgroundColor: `${tag.colour}20`,
-                          color: tag.colour,
-                          border: `1px solid ${tag.colour}40`,
-                        }}
+                        onClick={() => handleAddTag(tag._id)}
+                        className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                       >
                         <TagIcon className="h-3 w-3 mr-1" />
                         {tag.name}
-                        <button
-                          onClick={() => handleRemoveTag(tag._id)}
-                          className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="h-3 w-3 hover:text-red-600" />
-                        </button>
-                      </div>
+                      </button>
                     ))
                   ) : (
-                    <p className="text-sm text-gray-500 italic">No tags added yet</p>
+                    <p className="text-xs text-gray-500 italic">All available tags are already added</p>
                   )}
                 </div>
-
-                {/* Add Tag Section */}
-                {isAddingTag && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                    <p className="text-xs text-gray-600 mb-2">Available tags:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {availableTagsToAdd.length > 0 ? (
-                        availableTagsToAdd.map((tag) => (
-                          <button
-                            key={tag._id}
-                            onClick={() => handleAddTag(tag._id)}
-                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
-                          >
-                            <TagIcon className="h-3 w-3 mr-1" />
-                            {tag.name}
-                          </button>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500 italic">All available tags are already added</p>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => setIsAddingTag(false)}
-                      className="mt-2 text-xs text-gray-500 hover:text-gray-700 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
+                <button
+                  onClick={() => setIsAddingTag(false)}
+                  className="mt-2 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  Cancel
+                </button>
               </div>
-            </div>
+            )}
           </div>
+        </div>
+      </div>
 
-          {/* Actions */}
-          <div className="border-t border-gray-200 pt-6">
-            <div className="flex justify-end space-x-3">
-            <button
-              onClick={() => setIsEditing(true)}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100"
-            >
-              Edit Job
-            </button>
-            </div>
-          </div>
+      {/* Actions */}
+      <div className="border-t border-gray-200 pt-6">
+        <div className="flex justify-end space-x-3">
+        <button
+          onClick={() => setIsEditing(true)}
+          className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100"
+        >
+          Edit Job
+        </button>
+        </div>
+      </div>
 
-          <JobForm
-            isOpen={isEditing}
-            onClose={() => setIsEditing(false)}
-            onSuccess={fetchJob} // re-fetch job after update
-            job={job}
-          />
+      <JobForm
+        isOpen={isEditing}
+        onClose={() => setIsEditing(false)}
+        onSuccess={fetchJob} // re-fetch job after update
+        job={job}
+      />
         </div>
       </div>
     </div>

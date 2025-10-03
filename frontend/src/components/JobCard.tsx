@@ -99,11 +99,11 @@ const JobCard: React.FC<JobCardProps> = ({
         </div>
 
         {/* Tags */}
-        {job.tags && job.tags.length > 0 && (
-          <div className="mb-4">
-            <div className="flex items-center flex-wrap gap-2">
-              <TagIcon className="h-4 w-4 text-gray-400" />
-              {job.tags.map((tag) => (
+        <div className="mb-4">
+          <div className="flex items-center flex-wrap gap-2">
+            <TagIcon className="h-4 w-4 text-gray-400" />
+            {job.tags && job.tags.length > 0 ? (
+              job.tags.map((tag) => (
                 <span
                   key={tag._id}
                   className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
@@ -115,14 +115,31 @@ const JobCard: React.FC<JobCardProps> = ({
                 >
                   {tag.name}
                 </span>
-              ))}
-            </div>
+              ))
+            ) : (
+              <span className="text-sm text-gray-400 italic">No tags added</span>
+            )}
           </div>
-        )}
+        </div>
+
+        {/* File Attachment (inline) */}
+        <div className="mt-4 mb-3 text-sm text-gray-600 flex items-center space-x-1">
+          <span className="font-medium text-gray-800">Attachment:</span>
+          {job.file && job.file.url ? (
+            <button
+              onClick={() => window.open(job.file?.url, '_blank')}
+              className="text-indigo-600 hover:underline focus:outline-none"
+              title={`Click to view ${job.file.filename}`}
+            >
+              {'View file'}
+            </button>
+          ) : (
+            <span className="text-gray-400 italic">No file uploaded</span>
+          )}
+        </div>
 
         {/* Status Dropdown */}
-        <div className="flex items-center justify-between">
-        
+        <div className="flex items-center justify-between mt-6">
         <select
           value={job.status}
           onChange={(e) => onStatusChange(job.id, e.target.value as JobStatus)}

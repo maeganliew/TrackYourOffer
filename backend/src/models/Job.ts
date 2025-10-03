@@ -19,6 +19,13 @@ const jobSchema = new mongoose.Schema({
   appliedAt: {
     type: Date,
   },
+  file: {
+    url: { type: String },
+    type: { type: String }, // e.g. "image", "pdf"
+    filename: { type: String },
+    // Optional: include public_id for Cloudinary deletion later
+    // public_id: { type: String },
+  },
 }, 
 {
   timestamps: true, // adds createdAt and updatedAt

@@ -1,6 +1,7 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/auth.middleware';
-import { addJob, getJobs, getJob, changeJobName, changeJobStatus, changeJobDate, deleteJob, addJobTag, deleteJobTag, getJobTag } from '../controllers/jobs.controller';
+import { addJob, getJobs, getJob, changeJobName, changeJobStatus, changeJobDate, deleteJob, addJobTag, deleteJobTag, getJobTag, uploadFile, deleteFile } from '../controllers/jobs.controller';
+import { parser } from '../middleware/upload.middleware';
 
 const router = express.Router();
 
@@ -30,6 +31,12 @@ router.patch('/:jobId/appliedAt', authMiddleware, changeJobDate);
 // Delete job
 router.delete('/:jobId', authMiddleware, deleteJob);
 
+// Upload file for existing job
+router.post('/:jobId/file', authMiddleware, parser.single('file'), uploadFile);
+
+// Delete file
+router.delete('/:jobId/file', authMiddleware, deleteFile);
+
 
 
 // Job - Add tag
@@ -40,6 +47,7 @@ router.delete('/:jobId/tags/:tagId', authMiddleware, deleteJobTag);
 
 // Job - Get tag
 router.get('/:jobId/tags', authMiddleware, getJobTag);
+
 
 
 export default router;
