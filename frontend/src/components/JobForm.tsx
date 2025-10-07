@@ -24,7 +24,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
   const [isTagsLoading, setIsTagsLoading] = useState(false);
 
   const [file, setFile] = useState<File | null>(null);
-const [existingFile, setExistingFile] = useState(job?.file || null);
+  const [existingFile, setExistingFile] = useState(job?.file || null);
 
   useEffect(() => {
     // populate form with existing job data when form is opened
@@ -118,8 +118,8 @@ const [existingFile, setExistingFile] = useState(job?.file || null);
         }
         toast.success('Job updated successfully!');
       } else {
-        // Create new job
-      // === CREATE NEW ===
+      // Create new job
+      // if using multipart/form-data, backend endpoint has to change. need to parse using multer first, so that backend can get req.body.
       const formDataJob = new FormData();
       formDataJob.append('name', jobData.name);
       formDataJob.append('status', jobData.status);
@@ -273,9 +273,11 @@ const [existingFile, setExistingFile] = useState(job?.file || null);
     Attachment (Image or PDF)
   </label>
 
-  {existingFile && (
+  {(existingFile?.filename || file) && (
     <div className="mb-2 flex items-center justify-between p-2 bg-gray-100 rounded">
-      <span className="text-sm truncate max-w-[80%]">{existingFile.filename}</span>
+      <span className="text-sm truncate max-w-[80%]">
+        {file ? file.name : existingFile?.filename}
+      </span>
       <button
         type="button"
         onClick={() => {

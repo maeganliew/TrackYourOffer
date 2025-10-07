@@ -4,7 +4,7 @@ import Tag from '../models/Tag';
 import JobTag from '../models/jobTag';
 import Job from '../models/Job';
 import { allowedJobStatus } from "../Constants";
-import mongoose from "mongoose";
+import { rescheduleReminderJob, addReminderJob } from '../queues/reminderQueue';
 import type { Tag as typeTag } from "../types/index.ts";
 
 export const assertJobOwnership = async (jobId: string | undefined, userId: string | undefined) => {
@@ -19,45 +19,52 @@ export const assertJobOwnership = async (jobId: string | undefined, userId: stri
 };
 
 export const addJob = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-        const name = req.body.name?.trim();
-        const status = req.body.status?.trim();     
-        const appliedAtRaw = req.body.appliedAt;
-   
-        if (!name || !status) {
-            return res.status(400).json({ message: 'Job name, status and application time are required' });
-        }
+  try {
+    const { name, status, appliedAt } = req.body;
 
-        if (!allowedJobStatus.includes(status)) {
-            return res.status(400).json({ message: `Status must be one of: ${allowedJobStatus.join(', ')}` });
-        }
-        let appliedAt: Date | undefined = undefined;
-        if (appliedAtRaw) {
-            appliedAt = new Date(appliedAtRaw);
-            if (isNaN(appliedAt.getTime())) {
-                return res.status(400).json({ message: 'Invalid application date' });
-            }
-            if (appliedAt > new Date()) {
-                return res.status(400).json({ message: 'Application date cannot be in the future' });
-            }
-        }
-
-        const fileData = req.file
-            ? {
-                file: {
-                    url: (req.file as any).path,
-                    type: req.file.mimetype.includes('pdf') ? 'pdf' : 'image',
-                    filename: req.file.originalname,
-                }
-                }
-            : {};
-
-        const job = await Job.create({ userId: req.user?.id, name, status, appliedAt, ...fileData});
-        res.status(201).json({ message: 'Job created successfully', job });
-    } catch (err) {
-        next(err);
+    if (!name || !status) {
+      return res.status(400).json({ message: 'Job name, status and application time are required' });
     }
-}
+    if (!allowedJobStatus.includes(status)) {
+      return res.status(400).json({ message: `Status must be one of: ${allowedJobStatus.join(', ')}` });
+    }
+
+    let appliedAtDate: Date | undefined = undefined;
+    if (appliedAt) {
+      appliedAtDate = new Date(appliedAt);
+      if (isNaN(appliedAtDate.getTime())) {
+        return res.status(400).json({ message: 'Invalid application date' });
+      }
+      if (appliedAtDate > new Date()) {
+        return res.status(400).json({ message: 'Application date cannot be in the future' });
+      }
+    }
+
+    const fileData = req.file
+      ? {
+          file: {
+            url: (req.file as any).path,
+            type: req.file.mimetype.includes('pdf') ? 'pdf' : 'image',
+            filename: req.file.originalname,
+          },
+        }
+      : {};
+
+    const job = await Job.create({
+      userId: req.user?.id,
+      name,
+      status,
+      appliedAt: appliedAtDate,
+      ...fileData,
+    });
+
+    res.status(201).json({ message: 'Job created successfully', job });
+    await addReminderJob(job.id, 3 * 24 * 60 * 60 * 1000);
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 // Support tagId as a query parameter to only return jobs that have that tag.
 export const getJobs = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -175,6 +182,7 @@ export const changeJobName = async (req: AuthenticatedRequest, res: Response, ne
         job.name = newJobName;
         await job.save();
         res.status(200).json({ message: 'Job name updated', job });
+        await rescheduleReminderJob(job.id, 3 * 24 * 60 * 60 * 1000);
     } catch (err) {
         next(err);
     }
@@ -190,6 +198,7 @@ export const changeJobStatus = async (req: AuthenticatedRequest, res: Response, 
         job.status = newJobStatus;
         await job.save()
         res.status(200).json({ message: 'Job status changed successfully', job });
+        await rescheduleReminderJob(job.id, 3 * 24 * 60 * 60 * 1000);
     } catch (err) {
         next(err);
     }
@@ -217,6 +226,7 @@ export const changeJobDate = async (req: AuthenticatedRequest, res: Response, ne
         job.appliedAt = parsedTime;
         await job.save();
         res.status(200).json({ message: 'Applied time changed successfully', job });
+        await rescheduleReminderJob(job.id, 3 * 24 * 60 * 60 * 1000);
     } catch (err) {
         next(err);
     }
@@ -251,6 +261,7 @@ export const addJobTag = async (req: AuthenticatedRequest, res: Response, next: 
         // no need createdAt field, cuz schema set it to be Date.now
         const jobTag = await JobTag.create({jobId, tagId: existingTag._id})
         res.status(200).json({ message: 'Job Tag added successfully', jobTag});
+        await rescheduleReminderJob(job.id, 3 * 24 * 60 * 60 * 1000);
     } catch (err) {
         next(err);
     }
@@ -269,6 +280,7 @@ export const deleteJobTag = async (req: AuthenticatedRequest, res: Response, nex
         // no need createdAt field, cuz schema set it to be Date.now
         await JobTag.deleteOne({_id: existingJobTag._id})
         res.status(200).json({ message: 'Job Tag deleted successfully', existingJobTag});
+        await rescheduleReminderJob(job.id, 3 * 24 * 60 * 60 * 1000);
     } catch (err) {
         next(err);
     }
@@ -335,6 +347,7 @@ export const uploadFile = async (req: AuthenticatedRequest, res: Response, next:
     };
     await job.save();
     res.status(200).json({ message: 'File uploaded successfully', job });
+    await rescheduleReminderJob(job.id, 3 * 24 * 60 * 60 * 1000);
   } catch (err) {
     next(err);
   }

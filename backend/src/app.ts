@@ -8,6 +8,7 @@ import dashboardRoutes from './routes/dashboard.routes'
 import { rateLimiter } from './middleware/rateLimiter'
 import dotenv from "dotenv";
 import cors from 'cors';
+import reminderQueue from './queues/reminderQueue'; // importing just to execute the file
 
 dotenv.config(); // so that can get env variables by process.env.XXX
 

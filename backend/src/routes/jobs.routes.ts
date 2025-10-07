@@ -2,6 +2,9 @@ import express from 'express';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { addJob, getJobs, getJob, changeJobName, changeJobStatus, changeJobDate, deleteJob, addJobTag, deleteJobTag, getJobTag, uploadFile, deleteFile } from '../controllers/jobs.controller';
 import { parser } from '../middleware/upload.middleware';
+import multer from 'multer';
+
+const upload = multer({ dest: 'uploads/' });
 
 const router = express.Router();
 
@@ -11,7 +14,8 @@ const router = express.Router();
 
 
 // Add jobs
-router.post('/', authMiddleware, addJob);
+// After using multer, req.body will contain your text fields (name, status, appliedAt) and req.file will contain the file info if a file was uploaded.
+router.post('/', authMiddleware, upload.single('file'), addJob);
 
 // Get all jobs (with optional params stated)
 router.get('/', authMiddleware, getJobs);
