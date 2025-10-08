@@ -1,12 +1,23 @@
-// queues/reminderQueue.ts
-import Queue from 'bull';
+import Bull, { Queue as BullQueue } from 'bull'; // <- import class + type
 import { sendEmail } from '../utils/email';
 import Job from '../models/Job';
 import User from '../models/User';
 
-const reminderQueue = new Queue('reminders', {
-  redis: { host: '127.0.0.1', port: 6379 },
-});
+let reminderQueue: BullQueue | null = null;
+
+/**
+ * Lazily initializes the reminder queue.
+ * Ensures queue is only created when actually needed.
+ */
+export const getReminderQueue = (): BullQueue => {
+  if (!reminderQueue) {
+    reminderQueue = new Bull('reminders', {
+      redis: { host: '127.0.0.1', port: 6379 },
+    });
+    reminderQueue.process(handleReminderJob);
+  }
+  return reminderQueue;
+};
 
 export const handleReminderJob = async (job: { data: { jobId: string } }) => {
   const { jobId } = job.data;
@@ -32,11 +43,8 @@ export const handleReminderJob = async (job: { data: { jobId: string } }) => {
   }
 };
 
-// Whenever a job is added to this queue, call handleReminderJob to process it.
-reminderQueue.process(handleReminderJob);
-
 export const addReminderJob = async (jobId: string, delayMs: number) => {
-  await reminderQueue.add(
+  await getReminderQueue().add(
     { jobId },
     {
       delay: delayMs,
@@ -47,7 +55,8 @@ export const addReminderJob = async (jobId: string, delayMs: number) => {
 };
 
 export const rescheduleReminderJob = async (jobId: string, delayMs: number) => {
-  const jobs = await reminderQueue.getDelayed();
+  const queue = getReminderQueue();
+  const jobs = await queue.getDelayed();
   const existingJob = jobs.find(job => job.name === `reminder-${jobId}`);
 
   if (existingJob) {
@@ -57,4 +66,18 @@ export const rescheduleReminderJob = async (jobId: string, delayMs: number) => {
   await addReminderJob(jobId, delayMs);
 };
 
+/* original code
+
+const reminderQueue = new Queue('reminders', {
+  redis: { host: '127.0.0.1', port: 6379 },
+});
+
+reminderQueue.process(handleReminderJob);
+
 export default reminderQueue;
+
+This instantiates the queue immediately when the module is imported.
+
+every time some other module imports this file (even your tests importing app.ts),
+Node connects to Redis and starts a live queue process.
+*/

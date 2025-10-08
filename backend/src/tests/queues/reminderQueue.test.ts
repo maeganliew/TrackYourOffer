@@ -1,6 +1,3 @@
-// prevents real Redis connection. All methods (add, process, getDelayed, close) are faked
-import reminderQueue, { addReminderJob, rescheduleReminderJob } from '../../queues/reminderQueue';
-
 jest.mock('bull', () => {
   return jest.fn().mockImplementation(() => ({
     add: jest.fn(),
@@ -17,13 +14,17 @@ jest.mock('../../utils/email', () => ({
 jest.mock('../../models/Job');
 jest.mock('../../models/User');
 
-describe('Reminder Queue', () => {
-  afterAll(async () => {
-    await reminderQueue.close(); // closes the mocked queue
-  });
+// prevents real Redis connection. All methods (add, process, getDelayed, close) are faked
+// mock first, before importing (modules run immediately when imported)
+import { addReminderJob, rescheduleReminderJob, getReminderQueue } from '../../queues/reminderQueue';
 
+describe('Reminder Queue', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterAll(async () => {
+    await getReminderQueue().close(); // access the mocked queue here
   });
 
   it('should add a reminder job', async () => {
@@ -31,7 +32,7 @@ describe('Reminder Queue', () => {
     const delay = 1000;
     await addReminderJob(jobId, delay);
 
-    expect(reminderQueue.add).toHaveBeenCalledWith(
+    expect(getReminderQueue().add).toHaveBeenCalledWith(
       { jobId },
       { delay, removeOnComplete: true, removeOnFail: true }
     );
@@ -41,10 +42,10 @@ describe('Reminder Queue', () => {
     const jobId = 'job123';
     const delay = 2000;
 
-    (reminderQueue.getDelayed as jest.Mock).mockResolvedValue([]);
+    (getReminderQueue().getDelayed as jest.Mock).mockResolvedValue([]);
     await rescheduleReminderJob(jobId, delay);
 
-    expect(reminderQueue.add).toHaveBeenCalledWith(
+    expect(getReminderQueue().add).toHaveBeenCalledWith(
       { jobId },
       { delay, removeOnComplete: true, removeOnFail: true }
     );
