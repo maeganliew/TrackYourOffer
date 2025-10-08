@@ -8,14 +8,13 @@ const reminderQueue = new Queue('reminders', {
   redis: { host: '127.0.0.1', port: 6379 },
 });
 
-// Process the queue
-reminderQueue.process(async (job) => {
-  console.log("inside queue");
+export const handleReminderJob = async (job: { data: { jobId: string } }) => {
   const { jobId } = job.data;
 
   const jobData = await Job.findById(jobId);
   if (!jobData) return;
-  const user = await User.findById(jobData.userId)
+
+  const user = await User.findById(jobData.userId);
   if (!user) return;
 
   const now = new Date();
@@ -24,20 +23,20 @@ reminderQueue.process(async (job) => {
 
   console.log(`[Reminder Queue] Days since last update: ${daysSinceUpdate}`);
 
-  // Send email if job is not updated in 3 days
-  //if (daysSinceUpdate >= 3) {
+  if (daysSinceUpdate >= 3) {
     await sendEmail(
       user.email,
       'Reminder: Update your job status',
       `Your job "${jobData.name}" has not been updated in 3 days.`,
     );
- // }
-});
+  }
+};
+
+// Whenever a job is added to this queue, call handleReminderJob to process it.
+reminderQueue.process(handleReminderJob);
 
 export const addReminderJob = async (jobId: string, delayMs: number) => {
   await reminderQueue.add(
-    // if jobs are unnamed, generic processors will pick them up, but named jobs will need matching named processor.
-    //`reminder-${jobId}`,
     { jobId },
     {
       delay: delayMs,
@@ -57,6 +56,5 @@ export const rescheduleReminderJob = async (jobId: string, delayMs: number) => {
 
   await addReminderJob(jobId, delayMs);
 };
-
 
 export default reminderQueue;
