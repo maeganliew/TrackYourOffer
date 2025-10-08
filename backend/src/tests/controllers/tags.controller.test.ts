@@ -10,9 +10,10 @@ import { AuthenticatedRequest } from '../../types/auth-request';
 const app = express();
 app.use(bodyParser.json());
 
-// mock authenticated user
+// mock authenticated userId, any value thats an ObjectId
 let userId: mongoose.Types.ObjectId;
 app.use((req: any, res, next) => {
+  // mock something into req.user, controllers rely on it (normally set by Middleware, manually set one for testing)
   req.user = { id: userId.toHexString() }; // string id for controller
   next();
 });
