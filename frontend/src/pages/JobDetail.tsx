@@ -55,6 +55,7 @@ const JobDetail: React.FC = () => {
     } catch (error) {
       console.error('Error fetching job:', error);
       toast.error('Failed to load job details');
+      setIsLoading(false);
     }
   };
 
@@ -130,7 +131,7 @@ const JobDetail: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div data-testid="job-loading-skeleton" className="px-4 sm:px-6 lg:px-8">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-8"></div>
           <div className="bg-white rounded-lg border border-gray-200 p-8">

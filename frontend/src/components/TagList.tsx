@@ -64,7 +64,7 @@ const TagList: React.FC<TagListProps> = ({
               <button
                 onClick={() => onDelete(tag._id)}
                 className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                title="Delete tag"
+                title="Delete tag" aria-label="Delete tag"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>

@@ -67,6 +67,7 @@ const JobCard: React.FC<JobCardProps> = ({
                     onBlur={handleDateSubmit}
                     onKeyDown={handleDateKeyPress}
                     className="text-sm border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    data-testid={`applied-date-input-${job.id}`}
                     autoFocus
                   />
                 ) : (
@@ -85,6 +86,7 @@ const JobCard: React.FC<JobCardProps> = ({
               onClick={() => onEdit(job)}
               className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
               title="Edit job"
+              data-testid={`edit-button-${job.id}`}
             >
               <Edit className="h-4 w-4" />
             </button>
@@ -92,6 +94,7 @@ const JobCard: React.FC<JobCardProps> = ({
               onClick={() => onDelete(job.id)}
               className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
               title="Delete job"
+              data-testid={`delete-button-${job.id}`} // unique per job
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -144,6 +147,7 @@ const JobCard: React.FC<JobCardProps> = ({
           value={job.status}
           onChange={(e) => onStatusChange(job.id, e.target.value as JobStatus)}
           className="text-sm border border-gray-200 rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          data-testid={`status-select-${job.id}`}
         >
           {allowedJobStatus.map(status => (
             <option key={status} value={status}>
