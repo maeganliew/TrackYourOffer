@@ -122,14 +122,14 @@ const TagForm: React.FC<TagFormProps> = ({
                   type="color"
                   value={formData.colour}
                   onChange={handleChange}
-                  name="color"
+                  name="colour"
                   className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
                 />
                 <input
                   type="text"
                   value={formData.colour}
                   onChange={handleChange}
-                  name="color"
+                  name="colour"
                   className="flex-1 text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                   placeholder="#3B82F6"
                 />

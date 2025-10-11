@@ -70,6 +70,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
               <button
+                aria-label="Log out"
                 onClick={handleLogout}
                 className="ml-auto rounded-md p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
               >

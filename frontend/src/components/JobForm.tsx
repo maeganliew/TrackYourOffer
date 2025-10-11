@@ -269,7 +269,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
 
 
 <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">
+  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="file">
     Attachment (Image or PDF)
   </label>
 
@@ -292,6 +292,7 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
   )}
 
   <input
+    id="file"
     type="file"
     accept="image/*,application/pdf"
     onChange={(e) => {
@@ -301,11 +302,6 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
     }}
   />
 </div>
-
-
-
-
-
 
             <div className="flex justify-end space-x-3 pt-4">
               <button

@@ -50,6 +50,7 @@ const SortFilterBar: React.FC<SortFilterBarProps> = ({
           <div className="flex items-center space-x-2">
             <Filter className="h-4 w-4 text-gray-400" />
             <select
+              aria-label="All Tags"
               value={selectedTag || ''}
               onChange={(e) => onTagFilterChange(e.target.value || null)}
               className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
