@@ -4,7 +4,6 @@ import Tags from '../../src/pages/Tags';
 import api from '../../src/api/axios';
 import toast from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
-import { within } from '@testing-library/react';
 
 // Mock modules
 jest.mock('../../src/api/axios');

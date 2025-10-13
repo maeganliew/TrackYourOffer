@@ -6,6 +6,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import api from '../../src/api/axios';
 import toast from 'react-hot-toast';
 import userEvent from '@testing-library/user-event';
+import { setAuth } from '../../src/utils/auth';
 
 // Mocks
 jest.mock('../../src/context/AuthContext');
@@ -22,7 +23,7 @@ jest.mock('react-hot-toast', () => ({
 
 const mockSetAuth = jest.fn();
 jest.mock('../../src/utils/auth', () => ({
-  setAuth: (...args: any[]) => mockSetAuth(...args),
+  setAuth: (...args: Parameters<typeof setAuth>) => mockSetAuth(...args),
 }));
 
 const mockNavigate = jest.fn();

@@ -2,7 +2,6 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ProfileForm from '../../src/components/ProfileForm';
 import { User } from '../../src/types';
-import { Eye, EyeOff } from 'lucide-react';
 
 describe('ProfileForm', () => {
   const mockUser: User = {

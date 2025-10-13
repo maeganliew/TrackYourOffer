@@ -1,15 +1,20 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Profile from '../../src/pages/Profile';
-import ProfileForm from '../../src/components/ProfileForm';
 import { useAuth } from '../../src/context/AuthContext';
 import api from '../../src/api/axios';
 import toast from 'react-hot-toast';
 
+type ProfileFormProps = {
+  onUpdateUsername: (username: string) => void;
+  onUpdatePassword: (oldPassword: string, newPassword: string) => void;
+  isLoading?: boolean;
+};
+
 // Mock dependencies
 jest.mock('../../src/context/AuthContext');
 jest.mock('../../src/api/axios');
-jest.mock('../../src/components/ProfileForm', () => (props: any) => {
+jest.mock('../../src/components/ProfileForm', () => (props: ProfileFormProps) => {
   return (
     <div data-testid="profile-form">
       <button
@@ -82,7 +87,7 @@ describe('Profile Component', () => {
   });
 
   it('displays loading state when updating', async () => {
-    let resolvePatch: ((value?: any) => void) | undefined;
+    let resolvePatch: ((value?: unknown) => void) | undefined;
     (api.patch as jest.Mock).mockImplementation(
       () => new Promise((resolve) => (resolvePatch = resolve))
     );

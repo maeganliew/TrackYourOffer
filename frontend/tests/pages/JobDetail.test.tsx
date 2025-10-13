@@ -92,8 +92,11 @@ describe('JobDetail Page', () => {
       </MemoryRouter>
     );
 
-    const fallbackText = await screen.findByText(/job not found/i);
-    expect(fallbackText).toBeInTheDocument();
+    const fallbackElement = await waitFor(() =>
+      screen.getByTestId('job-not-found')
+    );    
+    expect(fallbackElement).toBeInTheDocument();
+    expect(fallbackElement).toHaveTextContent(/job not found/i);
     expect(toast.error).toHaveBeenCalledWith('Failed to load job details');
   });
 

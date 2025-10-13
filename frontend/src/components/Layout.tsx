@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Briefcase, Tags, User as UserIcon, LogOut, Menu, X } from 'lucide-react';
+import { Home, Briefcase, Tags, User as UserIcon, LogOut} from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface LayoutProps {
@@ -9,7 +9,6 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();

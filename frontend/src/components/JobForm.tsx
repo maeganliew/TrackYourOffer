@@ -65,17 +65,6 @@ const JobForm: React.FC<JobFormProps> = ({ isOpen, onClose, onSuccess, job }) =>
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  const handleFileRemove = () => {
-    setFile(null);
-    setExistingFile(null);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // prevent default page refresh
     if (!formData.appliedAt || formData.appliedAt.trim() === '') {

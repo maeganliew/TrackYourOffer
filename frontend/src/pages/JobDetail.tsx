@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { getStatusColour } from '../../../backend/src/Constants'
 import JobForm from '../components/JobForm';
 import { useLocation } from 'react-router-dom';
+import { useCallback } from 'react';
 
 const JobDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,12 +18,26 @@ const JobDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isTagsLoading, setIsTagsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileUploadLoading, setFileUploadLoading] = useState(false);
 
   const location = useLocation();
   const passedJob = location.state?.job as Job | undefined;
+
+  const fetchJob = useCallback(async () => {
+    try {
+      const response = await api.get(`/jobs/${id}`);
+      const jobData = response.data.job;
+      setJob(jobData);
+      setJobTags(jobData.tags || []);
+      setIsLoading(false);
+    } catch (error) {
+      setJob(null);
+      setIsLoading(false);
+      console.error('Error fetching job:', error);
+      toast.error('Failed to load job details');
+    }
+  }, [id]);
 
   useEffect(() => {
     if (passedJob) {
@@ -42,32 +57,14 @@ const JobDetail: React.FC = () => {
       fetchJob();
       fetchAvailableTags();
     }
-  }, [id]);
-
-  const fetchJob = async () => {
-    try {
-      const response = await api.get(`/jobs/${id}`);
-      const jobData = response.data.job;
-      //setJob(jobData);
-      setTimeout(() => setJob(jobData), 0);
-      setJobTags(jobData.tags || []);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching job:', error);
-      toast.error('Failed to load job details');
-      setIsLoading(false);
-    }
-  };
+  }, [id, fetchJob, passedJob]);
 
   const fetchAvailableTags = async () => {
-    setIsTagsLoading(true);
     try {
       const response = await api.get('/tags');
       setAvailableTags(response.data.tags);
     } catch (error) {
       console.error('Error fetching tags:', error);
-    } finally {
-      setIsTagsLoading(false);
     }
   };
 
@@ -147,10 +144,10 @@ const JobDetail: React.FC = () => {
     );
   }
 
-  if (!job) {
+  if (job === null) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="text-center py-12">
+        <div className="text-center py-12" data-testid="job-not-found">
           <p className="text-gray-500 mb-4">Job not found</p>
           <Link
             to="/jobs"

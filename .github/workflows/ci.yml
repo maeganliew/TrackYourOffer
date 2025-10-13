@@ -59,7 +59,7 @@ jobs:
 
       - name: Run frontend tests
         working-directory: ./frontend
-        run: npm test -- --watchAll=false --passWithNoTests
+        run: npx jest --passWithNoTests --watchAll=false
 
       - name: Build frontend
         working-directory: ./frontend

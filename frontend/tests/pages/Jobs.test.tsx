@@ -13,7 +13,7 @@ const jobsMock: Job[] = [
     id: '1',
     name: 'First Job',
     status: 'Wishlist',
-    appliedAt: new Date().toISOString(),
+    appliedAt: new Date('2025-10-11T12:00:00Z').toISOString(),
     tags: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
