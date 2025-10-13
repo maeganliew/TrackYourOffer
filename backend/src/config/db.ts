@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 // Import the mongoose module
 const mongoose = require("mongoose");
 
@@ -7,7 +10,7 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
 // Define the database URL to connect to.
-const MONGO_URI = "mongodb://localhost:27017/applicationTracker";
+const MONGO_URI = process.env.MONGO_URI!;
 
 // Wait for database to connect, logging an error if there is a problem
 export const connectDB = async () => {

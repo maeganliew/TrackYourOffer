@@ -1,9 +1,4 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -14,5 +9,6 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "ignoreDeprecations": "6.0"
-  }
+  },
+  "include": ["src", "tests", "**/*.test.ts", "**/*.test.tsx"]
 }
