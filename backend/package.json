@@ -29,6 +29,7 @@
     "bull": "^4.10.0",
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-rate-limit": "^6.0.5",
     "jsonwebtoken": "^9.0.0",
