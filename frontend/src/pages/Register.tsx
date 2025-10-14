@@ -52,7 +52,7 @@ const Register: React.FC = () => {
         <div className="flex justify-center">
           <div className="flex items-center space-x-2">
             <Briefcase className="h-10 w-10 text-indigo-600" />
-            <h1 className="text-2xl font-bold text-gray-900">JobTracker</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Track Your Offer</h1>
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">

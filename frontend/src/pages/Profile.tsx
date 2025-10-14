@@ -16,7 +16,7 @@ const Profile: React.FC = () => {
     // fetchUserProfile();
   }, []);
 
-  const { user, updateUser, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleUpdatePassword = async (currentPassword: string, newPassword: string) => {
     try {
