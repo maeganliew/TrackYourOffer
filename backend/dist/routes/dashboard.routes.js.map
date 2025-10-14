@@ -1,0 +1,1 @@
+{"version":3,"file":"dashboard.routes.js","sourceRoot":"","sources":["../../src/routes/dashboard.routes.ts"],"names":[],"mappings":";;;;;AAAA,sDAA8B;AAC9B,mEAA+D;AAC/D,8EAAmF;AAEnF,MAAM,MAAM,GAAG,iBAAO,CAAC,MAAM,EAAE,CAAC;AAEhC,MAAM,CAAC,GAAG,CAAC,QAAQ,EAAE,gCAAc,EAAE,+BAAQ,CAAC,CAAC;AAC/C,MAAM,CAAC,GAAG,CAAC,WAAW,EAAE,gCAAc,EAAE,yCAAkB,CAAC,CAAC;AAE5D,kBAAe,MAAM,CAAC"}
