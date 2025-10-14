@@ -21,7 +21,6 @@ describe('ProfileForm', () => {
     render(
       <ProfileForm
         user={mockUser}
-        onUpdateUsername={mockUpdateUsername}
         onUpdatePassword={mockUpdatePassword}
       />
     );
@@ -34,7 +33,6 @@ describe('ProfileForm', () => {
     render(
       <ProfileForm
         user={mockUser}
-        onUpdateUsername={mockUpdateUsername}
         onUpdatePassword={mockUpdatePassword}
       />
     );
@@ -48,7 +46,6 @@ describe('ProfileForm', () => {
     render(
       <ProfileForm
         user={mockUser}
-        onUpdateUsername={mockUpdateUsername}
         onUpdatePassword={mockUpdatePassword}
       />
     );
@@ -70,7 +67,6 @@ describe('ProfileForm', () => {
     render(
         <ProfileForm
         user={mockUser}
-        onUpdateUsername={mockUpdateUsername}
         onUpdatePassword={mockUpdatePassword}
         />
     );
@@ -91,7 +87,6 @@ describe('ProfileForm', () => {
     render(
         <ProfileForm
         user={mockUser}
-        onUpdateUsername={mockUpdateUsername}
         onUpdatePassword={mockUpdatePassword}
         />
     );
@@ -111,7 +106,6 @@ describe('ProfileForm', () => {
     render(
       <ProfileForm
         user={mockUser}
-        onUpdateUsername={mockUpdateUsername}
         onUpdatePassword={mockUpdatePassword}
       />
     );
