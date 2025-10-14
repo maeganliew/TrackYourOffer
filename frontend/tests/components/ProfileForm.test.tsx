@@ -10,7 +10,6 @@ describe('ProfileForm', () => {
     email: 'john@example.com',
   };
 
-  const mockUpdateUsername = jest.fn(() => Promise.resolve());
   const mockUpdatePassword = jest.fn(() => Promise.resolve());
 
   beforeEach(() => {
