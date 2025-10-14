@@ -65,7 +65,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
             <div className="flex w-full items-center">
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">{user?.username}</p>
                 <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
               <button

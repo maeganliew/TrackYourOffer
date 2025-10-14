@@ -11,9 +11,7 @@ let reminderQueue: BullQueue | null = null;
  */
 export const getReminderQueue = (): BullQueue => {
   if (!reminderQueue) {
-    reminderQueue = new Bull('reminders', {
-      redis: { host: '127.0.0.1', port: 6379 },
-    });
+    reminderQueue = new Bull('reminders', process.env.REDIS_URL!);
     reminderQueue.process(handleReminderJob);
   }
   return reminderQueue;

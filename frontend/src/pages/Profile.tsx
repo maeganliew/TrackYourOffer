@@ -74,7 +74,6 @@ const Profile: React.FC = () => {
       <div className="max-w-2xl">
         <ProfileForm
           user={user}
-          onUpdateUsername={handleUpdateUsername}
           onUpdatePassword={handleUpdatePassword}
           isLoading={isLoading}
         />

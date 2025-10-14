@@ -25,7 +25,7 @@ describe('Layout Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useAuth as jest.Mock).mockReturnValue({
-      user: { username: 'John Doe', email: 'john@example.com' },
+      user: { email: 'john@example.com' },
       logout: mockLogout,
     });
   });
@@ -43,7 +43,6 @@ describe('Layout Component', () => {
     expect(screen.getByText('Child Content')).toBeInTheDocument();
 
     // User info
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('john@example.com')).toBeInTheDocument();
 
     // Navigation links

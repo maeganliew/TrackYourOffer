@@ -2,7 +2,6 @@ import { JobStatus } from "../../../backend/src/Constants";
 
 export interface User {
   id: string;
-  username: string;
   email: string;
 }
 

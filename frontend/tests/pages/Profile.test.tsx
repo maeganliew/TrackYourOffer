@@ -6,7 +6,6 @@ import api from '../../src/api/axios';
 import toast from 'react-hot-toast';
 
 type ProfileFormProps = {
-  onUpdateUsername: (username: string) => void;
   onUpdatePassword: (oldPassword: string, newPassword: string) => void;
   isLoading?: boolean;
 };
@@ -17,12 +16,6 @@ jest.mock('../../src/api/axios');
 jest.mock('../../src/components/ProfileForm', () => (props: ProfileFormProps) => {
   return (
     <div data-testid="profile-form">
-      <button
-        onClick={() => props.onUpdateUsername('newusername')}
-        data-testid="update-username-btn"
-      >
-        Update Username
-      </button>
       <button
         onClick={() => props.onUpdatePassword('oldpass', 'newpass')}
         data-testid="update-password-btn"
@@ -41,7 +34,7 @@ const mockUpdateUser = jest.fn();
 describe('Profile Component', () => {
   beforeEach(() => {
     (useAuth as jest.Mock).mockReturnValue({
-      user: { id: '1', username: 'olduser', email: 'test@example.com' },
+      user: { id: '1', email: 'test@example.com' },
       updateUser: mockUpdateUser,
       logout: mockLogout,
     });
@@ -56,19 +49,6 @@ describe('Profile Component', () => {
     expect(screen.getByText(/manage your account settings/i)).toBeInTheDocument();
     expect(screen.getByTestId('profile-form')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
-  });
-
-  it('handles username update', async () => {
-    (api.patch as jest.Mock).mockResolvedValue({});
-
-    setup();
-    fireEvent.click(screen.getByTestId('update-username-btn'));
-
-    await waitFor(() => {
-      expect(api.patch).toHaveBeenCalledWith('/user/username', { username: 'newusername' });
-      expect(mockUpdateUser).toHaveBeenCalledWith({ id: '1', username: 'newusername', email: 'test@example.com' });
-      expect(toast.success).toHaveBeenCalledWith('Username updated!');
-    });
   });
 
   it('handles password update', async () => {
@@ -86,14 +66,14 @@ describe('Profile Component', () => {
     });
   });
 
-  it('displays loading state when updating', async () => {
+  it('displays loading state when updating password', async () => {
     let resolvePatch: ((value?: unknown) => void) | undefined;
     (api.patch as jest.Mock).mockImplementation(
       () => new Promise((resolve) => (resolvePatch = resolve))
     );
 
     setup();
-    fireEvent.click(screen.getByTestId('update-username-btn'));
+    fireEvent.click(screen.getByTestId('update-password-btn'));
     expect(screen.getByTestId('loading')).toBeInTheDocument();
 
     if (!resolvePatch) throw new Error('resolvePatch is not assigned');

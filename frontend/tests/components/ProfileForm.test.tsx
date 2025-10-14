@@ -6,7 +6,6 @@ import { User } from '../../src/types';
 describe('ProfileForm', () => {
   const mockUser: User = {
     id: '1',
-    username: 'johndoe',
     email: 'john@example.com',
   };
 
@@ -16,7 +15,7 @@ describe('ProfileForm', () => {
     jest.clearAllMocks();
   });
 
-  it('renders email and username inputs', () => {
+  it('renders email', () => {
     render(
       <ProfileForm
         user={mockUser}
@@ -25,20 +24,6 @@ describe('ProfileForm', () => {
     );
 
     expect(screen.getByDisplayValue(mockUser.email)).toBeDisabled();
-    expect(screen.getByDisplayValue(mockUser.username)).toBeInTheDocument();
-  });
-
-  it('updates username input value', () => {
-    render(
-      <ProfileForm
-        user={mockUser}
-        onUpdatePassword={mockUpdatePassword}
-      />
-    );
-
-    const usernameInput = screen.getByLabelText(/username/i) as HTMLInputElement;
-    fireEvent.change(usernameInput, { target: { value: 'janedoe' } });
-    expect(usernameInput.value).toBe('janedoe');
   });
 
   it('shows alert if new passwords do not match', async () => {
