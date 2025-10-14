@@ -16,8 +16,9 @@ const cors_1 = __importDefault(require("cors"));
 //import reminderQueue from './queues/reminderQueue'; // importing just to execute the file
 dotenv_1.default.config(); // so that can get env variables by process.env.XXX
 const app = (0, express_1.default)();
+app.set('trust proxy', 1);
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:5173',
+    origin: 'https://application-tracker-o993lgab2-jia-weis-projects-d83d18eb.vercel.app',
     credentials: true,
 }));
 // -------------------
