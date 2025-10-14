@@ -18,19 +18,6 @@ const Profile: React.FC = () => {
 
   const { user, updateUser, logout } = useAuth();
 
-  const handleUpdateUsername = async (username: string) => {
-    if (!user) return;
-    try {
-      setIsLoading(true);
-      await api.patch('/user/username', { username });
-      const updatedUser = { ...user, username };
-      updateUser(updatedUser); // ✅ automatically updates all components
-      toast.success('Username updated!');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleUpdatePassword = async (currentPassword: string, newPassword: string) => {
     try {
       setIsLoading(true);
