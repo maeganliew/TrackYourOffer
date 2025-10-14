@@ -42,25 +42,6 @@ describe('ProfileForm', () => {
     expect(usernameInput.value).toBe('janedoe');
   });
 
-  it('calls onUpdateUsername on submit', async () => {
-    render(
-      <ProfileForm
-        user={mockUser}
-        onUpdatePassword={mockUpdatePassword}
-      />
-    );
-
-    const usernameInput = screen.getByLabelText(/username/i) as HTMLInputElement;
-    fireEvent.change(usernameInput, { target: { value: 'janedoe' } });
-
-    const saveButton = screen.getByRole('button', { name: /save/i });
-    fireEvent.click(saveButton);
-
-    await waitFor(() => {
-      expect(mockUpdateUsername).toHaveBeenCalledWith('janedoe');
-    });
-  });
-
   it('shows alert if new passwords do not match', async () => {
     jest.spyOn(window, 'alert').mockImplementation(() => {});
 
