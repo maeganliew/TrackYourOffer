@@ -36,7 +36,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
             <div className="flex flex-shrink-0 items-center px-4">
               <Briefcase className="h-8 w-8 text-indigo-600" />
-              <h1 className="ml-2 text-xl font-bold text-gray-900">JobTracker</h1>
+              <h1 className="ml-2 text-xl font-bold text-gray-900">Track Your Offer</h1>
             </div>
             <nav className="mt-8 flex-1 space-y-1 px-2">
               {navigation.map((item) => {

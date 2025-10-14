@@ -74,7 +74,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  return (
+ return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
@@ -83,69 +83,59 @@ const Dashboard: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Total Jobs */}
         <div className="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
           <div className="p-6">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Briefcase className="h-6 w-6 text-indigo-600" />
-              </div>
+              <Briefcase className="h-6 w-6 text-indigo-600" />
               <div className="ml-4 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Jobs</dt>
-                  <dd className="text-2xl font-semibold text-gray-900">{stats.totalJobs}</dd>
-                </dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">Total Jobs</dt>
+                <dd className="text-2xl font-semibold text-gray-900">{stats.totalJobs}</dd>
               </div>
             </div>
           </div>
         </div>
 
+        {/* In Progress */}
         <div className="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
           <div className="p-6">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Clock className="h-6 w-6 text-yellow-600" />
-              </div>
+              <Clock className="h-6 w-6 text-yellow-600" />
               <div className="ml-4 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">In Progress</dt>
-                  <dd className="text-2xl font-semibold text-gray-900">
-                    {stats.jobsByStatus.Applied?stats.jobsByStatus.Applied:0 + stats.jobsByStatus.Interview?stats.jobsByStatus.Interview:0}
-                  </dd>
-                </dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">In Progress</dt>
+                <dd className="text-2xl font-semibold text-gray-900">
+                  {(stats.jobsByStatus.Applied || 0) + (stats.jobsByStatus.Interview || 0)}
+                </dd>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Offers */}
         <div className="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
           <div className="p-6">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <TrendingUp className="h-6 w-6 text-green-600" />
-              </div>
+              <TrendingUp className="h-6 w-6 text-green-600" />
               <div className="ml-4 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Offers</dt>
-                  <dd className="text-2xl font-semibold text-gray-900">{stats.jobsByStatus.offer? stats.jobsByStatus.offer : 0}</dd>
-                </dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">Offers</dt>
+                <dd className="text-2xl font-semibold text-gray-900">
+                  {stats.jobsByStatus.Offer || 0}
+                </dd>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Tags Used */}
         <div className="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
           <div className="p-6">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Tag className="h-6 w-6 text-purple-600" />
-              </div>
+              <Tag className="h-6 w-6 text-purple-600" />
               <div className="ml-4 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Tags Used</dt>
-                  <dd className="text-2xl font-semibold text-gray-900">
-                    {Object.keys(stats.jobsByTag).length}
-                  </dd>
-                </dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">Tags Used</dt>
+                <dd className="text-2xl font-semibold text-gray-900">
+                  {Object.keys(stats.jobsByTag).length}
+                </dd>
               </div>
             </div>
           </div>
@@ -157,28 +147,36 @@ const Dashboard: React.FC = () => {
         {/* Job Status Breakdown */}
         <div className="bg-white shadow-sm rounded-lg border border-gray-100 p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Job Status Breakdown</h3>
-          <div className="space-y-3">
-            {Object.entries(stats.jobsByStatus).map(([status, count]) => (
-              <div key={status} className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusColour(status)}`}>
+
+          {stats.totalJobs > 0 ? (
+            <div className="space-y-3">
+              {Object.entries(stats.jobsByStatus).map(([status, count]) => (
+                <div key={status} className="flex items-center justify-between">
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusColour(
+                      status
+                    )}`}
+                  >
                     {status}
                   </span>
-                </div>
-                <div className="flex items-center">
-                  <span className="text-sm font-medium text-gray-900">{count}</span>
-                  <div className="ml-3 w-16 bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-indigo-600 h-2 rounded-full"
-                      style={{ width: `${(count / stats.totalJobs) * 100}%` }}
-                    />
+                  <div className="flex items-center">
+                    <span className="text-sm font-medium text-gray-900">{count}</span>
+                    <div className="ml-3 w-16 bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-indigo-600 h-2 rounded-full"
+                        style={{ width: `${(count / stats.totalJobs) * 100}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm mt-2">
+              There are currently no jobs added. Add some jobs to view your status breakdown!
+            </p>
+          )}
         </div>
-
 
         {/* Temporary fix: Tailwind class whitelist to ensure JIT generates them */}
         <div className="hidden
@@ -190,20 +188,24 @@ const Dashboard: React.FC = () => {
           text-gray-600 bg-gray-100
         "></div>
 
-        {nudges.length > 0 && (
-          <div className="bg-white shadow-sm rounded-lg border border-gray-100 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Activity Nudges</h3>
+        {/* Activity Nudges */}
+        <div className="bg-white shadow-sm rounded-lg border border-gray-100 p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Activity Nudges</h3>
+          {nudges.length > 0 ? (
             <ul className="space-y-2 text-sm text-gray-700">
               {nudges.map((msg, idx) => (
                 <li key={idx} className="flex items-start gap-2">
-                  {/* Dark Indigo Bullet */}
                   <span className="mt-1 w-2 h-2 bg-indigo-900 rounded-full flex-shrink-0" />
-                  <div className="leading-relaxed text-slate-800">{(msg)}</div>
+                  <div className="leading-relaxed text-slate-800">{msg}</div>
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          ) : (
+            <p className="text-gray-500 text-sm">
+              No activity nudges right now. Once you add jobs or update statuses, you'll see reminders here.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
