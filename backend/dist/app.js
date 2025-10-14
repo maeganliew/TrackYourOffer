@@ -18,7 +18,7 @@ dotenv_1.default.config(); // so that can get env variables by process.env.XXX
 const app = (0, express_1.default)();
 app.set('trust proxy', 1);
 app.use((0, cors_1.default)({
-    origin: 'https://application-tracker-o993lgab2-jia-weis-projects-d83d18eb.vercel.app',
+    origin: 'https://application-tracker-iota.vercel.app',
     credentials: true,
 }));
 // -------------------

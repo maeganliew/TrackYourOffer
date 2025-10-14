@@ -17,7 +17,7 @@ const app = express();
 app.set('trust proxy', 1);
 
 app.use(cors({
-  origin: 'https://application-tracker-o993lgab2-jia-weis-projects-d83d18eb.vercel.app',
+  origin: 'https://application-tracker-iota.vercel.app',
   credentials: true,
 }));
 
