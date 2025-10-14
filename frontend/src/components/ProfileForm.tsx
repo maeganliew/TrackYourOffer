@@ -4,20 +4,15 @@ import { User } from '../types';
 
 interface ProfileFormProps {
   user: User;
-  onUpdateUsername: (username: string) => Promise<void>;
   onUpdatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   isLoading?: boolean;
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({
   user,
-  onUpdateUsername,
   onUpdatePassword,
   isLoading = false,
 }) => {
-  const [usernameData, setUsernameData] = useState({
-    username: user.username,
-  });
   
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -31,19 +26,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     confirm: false,
   });
   
-  const [isUpdatingUsername, setIsUpdatingUsername] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
-
-  const handleUsernameSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsUpdatingUsername(true);
-    
-    try {
-      await onUpdateUsername(usernameData.username);
-    } finally {
-      setIsUpdatingUsername(false);
-    }
-  };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,10 +54,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     } finally {
       setIsUpdatingPassword(false);
     }
-  };
-
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsernameData({ username: e.target.value });
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,41 +90,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
               Email address cannot be changed at this time.
             </p>
           </div>
-
-          <form onSubmit={handleUsernameSubmit}>
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Username
-              </label>
-              <div className="flex space-x-3">
-                <input
-                  type="text"
-                  id="username"
-                  value={usernameData.username}
-                  onChange={handleUsernameChange}
-                  className="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  placeholder="Enter your username"
-                />
-                <button
-                  type="submit"
-                  disabled={isUpdatingUsername || isLoading || usernameData.username === user.username}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {isUpdatingUsername ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      Updating...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </form>
         </div>
       </div>
 
