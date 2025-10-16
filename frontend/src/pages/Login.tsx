@@ -25,14 +25,8 @@ const handleSubmit = async (e: React.FormEvent) => {
   try {
     const response = await api.post<AuthResponse>('/auth/login', formData);
     
-    // 1️⃣ update context
     login(response.data.token, response.data.user);
-
-    // 2️⃣ navigate **after context state updates**
-    setTimeout(() => {
-      navigate('/dashboard');
-    }, 300);
-
+    navigate('/dashboard');
     toast.success('Welcome back!');
   } catch (err) {
     console.error(err);
