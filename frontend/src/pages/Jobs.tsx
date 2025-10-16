@@ -11,7 +11,7 @@ const Jobs: React.FC = () => {
   const location = useLocation();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [jobsLoading, setJobsLoading] = useState(true);
   const [isJobFormOpen, setIsJobFormOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
   
@@ -31,6 +31,7 @@ const Jobs: React.FC = () => {
 
   const fetchJobs = async (tag?: string) => {
     try {
+      setJobsLoading(true);
       const response = await api.get('/jobs', {
         params: {
           search: searchTerm,
@@ -40,10 +41,10 @@ const Jobs: React.FC = () => {
         },
       });
       setJobs(response.data.jobs);
-      setIsLoading(false);
+      setJobsLoading(false);
     } catch (error) {
       console.error('Error fetching jobs:', error);
-      setIsLoading(false);
+      setJobsLoading(false);
     }
   };
 
@@ -52,10 +53,8 @@ const Jobs: React.FC = () => {
       const response = await api.get('/tags');
       const availableTags = Array.isArray(response.data.tags) ? response.data.tags : [];
       setAvailableTags(availableTags);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching tags:', error);
-      setIsLoading(false);
     }
   };
 
@@ -145,10 +144,10 @@ const Jobs: React.FC = () => {
         onTagFilterChange={setSelectedTag}
         availableTags={availableTags}
         onAddJob={() => setIsJobFormOpen(true)}
-        isLoading={isLoading}
+        isLoading={jobsLoading}
       />
 
-      {isLoading ? (
+      {jobsLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
