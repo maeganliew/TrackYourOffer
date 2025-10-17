@@ -1,4 +1,4 @@
-# 💼 Track Your Offer
+# 💼✨ Track Your Offer
 
 A backend-focused tool to track job applications, manage statuses, upload CVs, and send reminders — designed to demonstrate real-world system design, async processing, and robust API development.
 
