@@ -1,1 +1,1 @@
-export const API_BASE_URL = 'https://apptracker-production.up.railway.app';
+export const API_BASE_URL = 'https://track-your-offer.up.railway.app';

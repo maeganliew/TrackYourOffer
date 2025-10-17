@@ -16,7 +16,7 @@ const options = {
         description: 'Local dev backend',
       },
       {
-        url: 'https://apptracker-production.up.railway.app', // deployed backend
+        url: 'https://track-your-offer.up.railway.app', // deployed backend
         description: 'Deployed backend',
       },
     ],
