@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
-    "test": "jest --passWithNoTests --watchAll=false"
+    "test": "jest --coverage --passWithNoTests --watchAll=false"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
@@ -47,6 +47,7 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.3.0",
     "util": "^0.12.5",
-    "vite": "^5.4.2"
+    "vite": "^5.4.2",
+    "vitest": "^3.2.4"
   }
 }

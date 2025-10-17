@@ -1,0 +1,22 @@
+name: Test & Upload Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: npm test -- --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with: {}
