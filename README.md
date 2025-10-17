@@ -82,3 +82,32 @@ A backend-focused tool to track job applications, manage statuses, upload CVs, a
    ```bash
    npm run dev
    ```
+   
+## 🧪 Testing
+### Backend Tests
+From the `backend` folder:
+
+```bash
+npm run test
+# or to detect open handles
+npx jest --detectOpenHandles
+```
+
+### Frontend Tests
+From the `frontend` folder:
+
+```bash
+npx jest
+```
+
+### Notes
+- Includes **unit + integration tests**  
+- Mocks file uploads and Redis for testing  
+- Coverage reports available if configured with Jest
+
+## 🚀 Future Improvements
+
+- Role-based access control (admin vs user)
+- Refresh tokens for JWT
+- Analytics dashboard (aggregated job stats)
+- Job scraping / external API integrations
