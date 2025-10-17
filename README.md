@@ -8,9 +8,10 @@ A backend-focused tool to track job applications, manage statuses, upload CVs, a
 ---
 
 ## 🔗 Project Demo / URLs
-- **Backend API Base URL:** `https://apptracker-production.up.railway.app`  
-- **Swagger UI:** `http://apptracker-production.up.railway.app/api-docs`  
-- **Frontend (deployed):** `https://apptracker-production.up.railway.app`  
+- **Backend API Base URL:** [https://apptracker-production.up.railway.app](https://apptracker-production.up.railway.app)
+- **Swagger UI:** [http://apptracker-production.up.railway.app/api-docs](http://apptracker-production.up.railway.app/api-docs)
+- **Frontend (deployed):** [https://apptracker-production.up.railway.app](https://apptracker-production.up.railway.app)
+ 
 
 ---
 
