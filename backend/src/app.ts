@@ -8,6 +8,7 @@ import dashboardRoutes from './routes/dashboard.routes'
 import { rateLimiter } from './middleware/rateLimiter'
 import dotenv from "dotenv";
 import cors from 'cors';
+import { setupSwagger } from './swagger';
 //import reminderQueue from './queues/reminderQueue'; // importing just to execute the file
 
 dotenv.config(); // so that can get env variables by process.env.XXX
@@ -20,6 +21,8 @@ app.use(cors({
   origin: 'https://track-your-offer-iota.vercel.app',
   credentials: true,
 }));
+
+setupSwagger(app);
 
 // -------------------
 // Middleware
