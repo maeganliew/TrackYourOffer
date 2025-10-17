@@ -298,33 +298,6 @@ export const getJobTag = async (req: AuthenticatedRequest, res: Response, next: 
     }
 }
 
-// export const getJobsByTag = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-//     try {
-//         const {tagId} = req.params;
-//         const userId = req.user?.id;
-
-//         if (!tagId) {
-//         return res.status(400).json({ message: 'tagId query parameter is required' });
-//         }
-//         const tag = await Tag.findOne({ _id: tagId, userId });
-//         if (!tag) {
-//             return res.status(404).json({ message: 'Tag not found or does not belong to user' });
-//         }
-
-//         const jobTagLinks = await JobTag.find({ tagId: tag._id });
-//         const jobIds = jobTagLinks.map(link => link.jobId);
-//         if (jobIds.length === 0) {
-//             return res.status(200).json({ message: 'No jobs for this tag', jobs: [] });
-//         }
-
-//         const jobs = await Job.find({ _id: { $in: jobIds }, userId: userId });
-//         res.status(200).json({ message: 'Jobs with specified tag returned successfully', jobs });
-//     } catch (err) {
-//         next(err);
-//     }
-// }
-
-
 export const uploadFile = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { jobId } = req.params;
