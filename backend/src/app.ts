@@ -42,12 +42,13 @@ app.use((req, res, next) => {
   next();
 });
 
-
-
-
 // -------------------
 // Routes
 // -------------------
+
+app.get('/', (req, res) => {
+  res.send('<h1>Track Your Offer Backend is Running</h1><p>This is an API server. Use Postman / Swagger to interact with it.</p>');
+});
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/tags', tagRoutes);
