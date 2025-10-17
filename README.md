@@ -55,8 +55,7 @@ A backend-focused tool to track job applications, manage statuses, upload CVs, a
 ## ⚙️ Setup / Installation
 1. Clone repository:  
    ```bash
-   git clone <repo-url>
-   cd track-your-offer
+   git clone (https://github.com/maeganliew/TrackYourOffer.git)
    ```
    
 2. Configure environment variables: .env (backend URL, JWT secret, Cloudinary credentials, Redis URL, DB URL)
