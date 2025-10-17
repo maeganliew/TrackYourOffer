@@ -1,5 +1,5 @@
 # 🏗️ Track Your Offer
-[![Build Status](https://img.shields.io/github/actions/workflow/status/maeganliew/TrackYourOffer/backend.yml?branch=main)](https://github.com/maeganliew/TrackYourOffer/actions)  
+[![Build Status](https://img.shields.io/github/actions/workflow/status/maeganliew/TrackYourOffer/cd.yml?branch=main)](https://github.com/maeganliew/TrackYourOffer/actions)  
 [![Coverage](https://img.shields.io/codecov/c/gh/maeganliew/TrackYourOffer?branch=main)](https://codecov.io/gh/maeganliew/TrackYourOffer)  
 [![Frontend Live](https://img.shields.io/badge/frontend-live-brightgreen)](http://<frontend-url>)
 
