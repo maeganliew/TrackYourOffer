@@ -57,14 +57,16 @@ A backend-focused tool to track job applications, manage statuses, upload CVs, a
    ```bash
    git clone <repo-url>
    cd track-your-offer
+   ```
 2. Configure environment variables: .env (backend URL, JWT secret, Cloudinary credentials, Redis URL, DB URL)
 3. Install backend dependencies:
    ```cd backend
-   ```npm install
+   npm install
+   ```
 4. Run backend:
-   ```npm run dev
+   ```npm run dev```
 5. Install frontend dependencies:
    ```cd ../frontend
-   ```npm install
+   npm install```
 6. Run frontend:
-   ```npm run dev
+   ```npm run dev```
