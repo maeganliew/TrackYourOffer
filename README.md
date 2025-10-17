@@ -1,6 +1,9 @@
 # 💼✨ Track Your Offer
 [![CI Build Status](https://img.shields.io/github/actions/workflow/status/maeganliew/TrackYourOffer/ci.yml?branch=main)](https://github.com/maeganliew/TrackYourOffer/actions)
+[![Coverage](https://img.shields.io/codecov/c/gh/maeganliew/TrackYourOffer?branch=main)](https://codecov.io/gh/maeganliew/TrackYourOffer)
 [![Frontend Live](https://img.shields.io/badge/frontend-live-brightgreen)](https://track-your-offer-iota.vercel.app/)
+
+---
 
 A backend-focused tool to track job applications, manage statuses, upload CVs, and send reminders — designed to demonstrate real-world system design, async processing, and robust API development.
 
@@ -89,16 +92,15 @@ A backend-focused tool to track job applications, manage statuses, upload CVs, a
 From the `backend` folder:
 
 ```bash
-npm run test
-# or to detect open handles
-npx jest --detectOpenHandles
+npm run test       # run all backend tests and generate coverage
+npx jest --detectOpenHandles   # debug open handles
 ```
 
 ### Frontend Tests
 From the `frontend` folder:
 
 ```bash
-npx jest
+npm run test      # run all frontend tests and generate coverage
 ```
 
 ### Notes
