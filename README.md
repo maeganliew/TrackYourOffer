@@ -1,4 +1,6 @@
 # 💼✨ Track Your Offer
+[![CI Build Status](https://img.shields.io/github/actions/workflow/status/maeganliew/TrackYourOffer/ci.yml?branch=main)](https://github.com/maeganliew/TrackYourOffer/actions)
+[![Frontend Live](https://img.shields.io/badge/frontend-live-brightgreen)](https://track-your-offer-iota.vercel.app/)
 
 A backend-focused tool to track job applications, manage statuses, upload CVs, and send reminders — designed to demonstrate real-world system design, async processing, and robust API development.
 
