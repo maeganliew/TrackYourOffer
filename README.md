@@ -1,4 +1,7 @@
 # 🏗️ Track Your Offer
+[![Build Status](https://img.shields.io/github/actions/workflow/status/<user>/<repo>/backend.yml?branch=main)](https://github.com/<user>/<repo>/actions)  
+[![Coverage](https://img.shields.io/codecov/c/gh/<user>/<repo>?branch=main)](https://codecov.io/gh/<user>/<repo>)  
+[![Frontend Live](https://img.shields.io/badge/frontend-live-brightgreen)](http://<frontend-url>)
 
 ---
 
