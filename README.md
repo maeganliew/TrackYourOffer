@@ -1,9 +1,4 @@
 # 🏗️ Track Your Offer
-[![CI Build Status](https://img.shields.io/github/actions/workflow/status/maeganliew/TrackYourOffer/ci.yml?branch=main)](https://github.com/maeganliew/TrackYourOffer/actions)
-[![Coverage](https://img.shields.io/codecov/c/gh/maeganliew/TrackYourOffer?branch=main)](https://codecov.io/gh/maeganliew/TrackYourOffer)  
-[![Frontend Live](https://img.shields.io/badge/frontend-live-brightgreen)](http://<frontend-url>)
-
----
 
 ### One-liner
 A backend-focused tool to track job applications, manage statuses, upload CVs, and send reminders — designed to demonstrate real-world system design, async processing, and robust API development.
@@ -57,3 +52,19 @@ A backend-focused tool to track job applications, manage statuses, upload CVs, a
 
 ---
 
+## ⚙️ Setup / Installation
+1. Clone repository:  
+   ```bash
+   git clone <repo-url>
+   cd track-your-offer
+2. Configure environment variables: .env (backend URL, JWT secret, Cloudinary credentials, Redis URL, DB URL)
+3. Install backend dependencies:
+   ```cd backend
+   npm install
+4. Run backend:
+   ```npm run dev
+5. Install frontend dependencies:
+   ```cd ../frontend
+   npm install
+6. Run frontend:
+   npm run dev
