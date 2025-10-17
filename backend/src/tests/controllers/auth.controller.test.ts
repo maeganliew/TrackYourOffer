@@ -27,7 +27,7 @@ describe('Auth Controller', () => {
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('token');
-      expect(res.body).toHaveProperty('uid');
+      expect(res.body).toHaveProperty('id');
       expect(res.body.email).toBe('test@example.com');
 
       const user = await User.findOne({ email: 'test@example.com' });
