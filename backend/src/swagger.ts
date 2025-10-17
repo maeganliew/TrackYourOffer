@@ -12,7 +12,26 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000', // change for production later
+        url: 'http://localhost:3000', // dev backend
+        description: 'Local dev backend',
+      },
+      {
+        url: 'https://apptracker-production.up.railway.app', // deployed backend
+        description: 'Deployed backend',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
       },
     ],
   },
