@@ -108,7 +108,7 @@ router.post('/', authMiddleware, upload.single('file'), addJob);
  *                 jobs:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/JobWithTags'
+ *                     $ref: '#/components/schemas/JobTags'
  */
 router.get('/', authMiddleware, getJobs);
 
@@ -138,7 +138,7 @@ router.get('/', authMiddleware, getJobs);
  *                 message:
  *                   type: string
  *                 job:
- *                   $ref: '#/components/schemas/JobWithTags'
+ *                   $ref: '#/components/schemas/JobTags'
  *       404:
  *         description: Job not found
  */
