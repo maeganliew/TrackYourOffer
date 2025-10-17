@@ -18,7 +18,10 @@ const app = express();
 app.set('trust proxy', 1);
 
 app.use(cors({
-  origin: 'https://track-your-offer-iota.vercel.app',
+  origin: [
+  'https://track-your-offer-iota.vercel.app',
+  'https://track-your-offer.up.railway.app'
+  ],
   credentials: true,
 }));
 
