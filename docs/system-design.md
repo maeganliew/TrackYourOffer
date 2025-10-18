@@ -6,12 +6,13 @@ This section explains the design decisions and trade-offs made while building **
 
 ## 1. Database Design (MongoDB + Mongoose)
 
-- **Why MongoDB**: Flexible schema allows rapid iteration with evolving features like tags, notes, and activity logs.
-- **Trade-offs**: Lacks strict relational constraints of SQL databases, but simplifies early development and reduces setup overhead.
+- **Why MongoDB**: Flexible schema allows rapid iteration with evolving features like tags, notes, and job statuses.
 - **Schema Overview**:
-  - One `User` → many `Jobs`
-  - One `Job` → multiple `Tags`
-  - `ActivityLogs` track all CRUD operations for auditing and history
+  - `User` → owns many `Jobs` and `Tags`
+  - `Job` → contains file info (CV), status, and timestamps
+  - `JobTag` → links `Jobs` to `Tags` (many-to-many relationship)
+  - `Tag` → user-defined labels with colors
+- **Trade-offs**: MongoDB is less strict than SQL for relational constraints, but simplifies early development and scaling for flexible data models.
 
 ---
 
