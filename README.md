@@ -3,8 +3,16 @@
 [![Frontend Live](https://img.shields.io/badge/frontend-live-brightgreen)](https://track-your-offer-iota.vercel.app/)
 [![Coverage](https://img.shields.io/codecov/c/gh/maeganliew/TrackYourOffer?branch=main)](https://codecov.io/gh/maeganliew/TrackYourOffer)
 
-A backend-focused tool to track job applications, manage statuses, upload CVs, and send reminders. Designed with scalable database schema, asynchronous job processing using Bull + Redis, and comprehensive unit/integration testing to simulate production-level reliability. Demonstrates full-stack engineering skills including API design, authentication, file handling, and CI/CD deployment pipelines.
+**Track Your Offer** is a backend-focused job application tracker designed to showcase real-world system design, asynchronous processing, and robust API development.
 
+The platform allows users to manage job applications, upload CVs, track statuses, set reminders, and visualize dashboard insights — all built with scalability, maintainability, and production-readiness in mind.
+
+## Key Highlights
+
+- **Full-stack API design:** Clean, well-documented endpoints with Swagger integration
+- **Asynchronous workflows:** Background email reminders using Bull + Redis
+- **Secure authentication & authorization:** JWT-based access control with room for role-based extensions
+- **Production-ready practices:** CI/CD, testing, error handling, rate limiting, and deployment to Railway & Vercel
 ---
 
 ## 🔗 Project Demo / URLs
