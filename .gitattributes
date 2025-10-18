@@ -1,0 +1,16 @@
+# Backend (Node + Express + MongoDB)
+backend/* linguist-detectable=true
+backend/**/*.ts linguist-language=TypeScript
+
+# Frontend (React + Vite/Next)
+# Still visible in repo, but excluded from language stats
+frontend/* linguist-detectable=false
+
+# Common config & infra files
+*.json linguist-detectable=true
+*.yml linguist-detectable=true
+*.yaml linguist-detectable=true
+*.md linguist-detectable=true
+*.env linguist-detectable=false
+Dockerfile linguist-detectable=true
+*.sh linguist-detectable=true
