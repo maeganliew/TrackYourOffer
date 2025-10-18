@@ -1,14 +1,15 @@
 # 💼✨ Track Your Offer
 [![CI Build Status](https://img.shields.io/github/actions/workflow/status/maeganliew/TrackYourOffer/ci.yml?branch=main)](https://github.com/maeganliew/TrackYourOffer/actions)
 [![Frontend Live](https://img.shields.io/badge/frontend-live-brightgreen)](https://track-your-offer-iota.vercel.app/)
+[![Coverage](https://img.shields.io/codecov/c/gh/maeganliew/TrackYourOffer?branch=main)](https://codecov.io/gh/maeganliew/TrackYourOffer)
 
 A backend-focused tool to track job applications, manage statuses, upload CVs, and send reminders — designed to demonstrate real-world system design, async processing, and robust API development.
 
 ---
 
 ## 🔗 Project Demo / URLs
-- **Backend API Base URL:** [https://apptracker-production.up.railway.app](https://apptracker-production.up.railway.app)
-- **Swagger UI:** [http://apptracker-production.up.railway.app/api-docs](http://apptracker-production.up.railway.app/api-docs)
+- **Backend API Base URL:** [https://track-your-offer.up.railway.app](https://track-your-offer.up.railway.app)
+- **Swagger UI:** [http://track-your-offer.up.railway.app/api-docs](http://track-your-offer.up.railway.app/api-docs)
 - **Frontend (deployed):** [https://track-your-offer-iota.vercel.app/](https://track-your-offer-iota.vercel.app/)
  
 
@@ -18,7 +19,7 @@ A backend-focused tool to track job applications, manage statuses, upload CVs, a
 - **Backend:** Node.js + Express (TypeScript)  
 - **Database:** MongoDB (Mongoose)  
 - **Authentication:** JWT  
-- **File Uploads:** Cloudinary / local directory  
+- **File Uploads:** Cloudinary
 - **Background Jobs:** Bull + Redis  
 - **Testing:** Jest + Supertest  
 - **CI/CD:** GitHub Actions  
@@ -89,16 +90,15 @@ A backend-focused tool to track job applications, manage statuses, upload CVs, a
 From the `backend` folder:
 
 ```bash
-npm run test
-# or to detect open handles
-npx jest --detectOpenHandles
+npm run test       # run all backend tests and generate coverage
+npx jest --detectOpenHandles   # debug open handles
 ```
 
 ### Frontend Tests
 From the `frontend` folder:
 
 ```bash
-npx jest
+npm run test      # run all frontend tests and generate coverage
 ```
 
 ### Notes
