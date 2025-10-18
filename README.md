@@ -19,7 +19,7 @@ A backend-focused tool to track job applications, manage statuses, upload CVs, a
 - **Backend:** Node.js + Express (TypeScript)  
 - **Database:** MongoDB (Mongoose)  
 - **Authentication:** JWT  
-- **File Uploads:** Cloudinary / local directory  
+- **File Uploads:** Cloudinary
 - **Background Jobs:** Bull + Redis  
 - **Testing:** Jest + Supertest  
 - **CI/CD:** GitHub Actions  
