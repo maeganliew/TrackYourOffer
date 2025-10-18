@@ -3,7 +3,7 @@
 [![Frontend Live](https://img.shields.io/badge/frontend-live-brightgreen)](https://track-your-offer-iota.vercel.app/)
 [![Coverage](https://img.shields.io/codecov/c/gh/maeganliew/TrackYourOffer?branch=main)](https://codecov.io/gh/maeganliew/TrackYourOffer)
 
-A backend-focused tool to track job applications, manage statuses, upload CVs, and send reminders — designed to demonstrate real-world system design, async processing, and robust API development.
+A backend-focused tool to track job applications, manage statuses, upload CVs, and send reminders. Designed with scalable database schema, asynchronous job processing using Bull + Redis, and comprehensive unit/integration testing to simulate production-level reliability. Demonstrates full-stack engineering skills including API design, authentication, file handling, and CI/CD deployment pipelines.
 
 ---
 
@@ -108,7 +108,10 @@ npm run test      # run all frontend tests and generate coverage
 
 ## 🚀 Future Improvements
 
-- Role-based access control (admin vs user)
-- Refresh tokens for JWT
-- Analytics dashboard (aggregated job stats)
-- Job scraping / external API integrations
+- Role-based access control: Admin vs. user views, planned for production-ready security.
+- Refresh tokens: Improve JWT security and session management.
+- Analytics dashboard: Aggregate job stats, trends, and reminders.
+- Scalability & performance considerations:
+  - With 10k+ users, I would implement database sharding and query caching for dashboard stats.
+  - Introduce rate limiting and horizontal scaling for API servers to handle high concurrency.
+  - Move background jobs to microservices if queue volume grows.
