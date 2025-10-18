@@ -46,7 +46,7 @@ The platform allows users to manage job applications, upload CVs, track statuses
 - Swagger API documentation  
 - Rate limiting & error handling  
 
-> ⚡ Full API endpoints are available via [Swagger UI](http://apptracker-production.up.railway.app/api-docs).
+> ⚡ Full API endpoints are available via [Swagger UI](http://track-your-offer.up.railway.app/api-docs).
 
 ---
 
