@@ -24,6 +24,7 @@ The platform allows users to manage job applications, upload CVs, track statuses
 ---
 
 ## 🛠️ Tech Stack
+- **Frontend:** React + TypeScript
 - **Backend:** Node.js + Express (TypeScript)  
 - **Database:** MongoDB (Mongoose)  
 - **Authentication:** JWT  
